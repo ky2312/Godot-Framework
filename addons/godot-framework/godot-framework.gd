@@ -5,6 +5,7 @@ var app: App
 func _init() -> void:
 	app = App.new()
 
+## Godot的场景和节点
 #class IController:
 	#pass
 
