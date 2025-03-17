@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqdqtdqmu101u"]
+
+[ext_resource type="Script" uid="uid://ccvswn5rjbfh5" path="res://example/scenes/one.gd" id="1_amse2"]
+
+[node name="One" type="Node2D"]
+script = ExtResource("1_amse2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 345.0
+offset_bottom = 170.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 6
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "点击击杀1次小怪"
+
+[node name="Button2" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "去下一个场景"
+
+[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/Button2" to="." method="_on_button_2_pressed"]

@@ -11,5 +11,15 @@ config_version=5
 [application]
 
 config/name="Godot-Framework"
+run/main_scene="uid://cqdqtdqmu101u"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Framework="*res://addons/godot-framework/godot-framework.gd"
+GameManager="*res://example/game_manager.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-framework/plugin.cfg")
