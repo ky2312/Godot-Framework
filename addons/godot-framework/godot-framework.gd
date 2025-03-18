@@ -220,65 +220,65 @@ class App extends RefCounted:
 		get():
 			return !!router
 	
-	## 模块管理
-	var _modules: Dictionary
+	## 可被管理的实例
+	var _container: Dictionary
 	
 	## 注册系统层实例
 	func register_system(system_class: Object) -> ISystem:
-		if _modules.has(system_class):
+		if _container.has(system_class):
 			push_error("Cannot register a system class with the same name.")
 			return
 		var ins = _is_valid_class(ISYSTEM_KEY, system_class)
 		if not ins:
 			push_error("This class is not a system class.")
 			return
-		_modules.set(system_class, ins)
+		_container.set(system_class, ins)
 		return ins
 	
 	## 获取系统层实例
 	func get_system(system_class: Object) -> ISystem:
-		if not _modules.has(system_class):
+		if not _container.has(system_class):
 			push_error("Cannot get a system class with the name.")
 			return
-		return _modules.get(system_class)
+		return _container.get(system_class)
 	
 	## 注册模型层实例
 	func register_model(model_class: Object) -> IModel:
-		if _modules.has(model_class):
+		if _container.has(model_class):
 			push_error("Cannot register a model class with the same name.")
 			return
 		var ins = _is_valid_class(IMODEL_KEY, model_class)
 		if not ins:
 			push_error("This class is not a model class.")
 			return
-		_modules.set(model_class, ins)
+		_container.set(model_class, ins)
 		return ins
 	
 	## 获取模型层实例
 	func get_model(model_class: Object) -> IModel:
-		if not _modules.has(model_class):
+		if not _container.has(model_class):
 			push_error("Cannot get a model class with the name.")
 			return
-		return _modules.get(model_class)
+		return _container.get(model_class)
 	
 	## 注册工具层实例
 	func register_utility(utility_class: Object) -> IUtility:
-		if _modules.has(utility_class):
+		if _container.has(utility_class):
 			push_error("Cannot register a utility class with the same name.")
 			return
 		var ins = _is_valid_class(IUTILITY_KEY, utility_class)
 		if not ins:
 			push_error("This class is not a utility class.")
 			return
-		_modules.set(utility_class, ins)
+		_container.set(utility_class, ins)
 		return ins
 	
 	## 获取工具层实例
 	func get_utility(utility_class: Object) -> IUtility:
-		if not _modules.has(utility_class):
+		if not _container.has(utility_class):
 			push_error("Cannot get a utility class with the name.")
 			return
-		return _modules.get(utility_class)
+		return _container.get(utility_class)
 	
 	## 发送命令
 	func send_command(command: ICommand):
@@ -300,10 +300,10 @@ class App extends RefCounted:
 				push_error("The main route has not been set. Please use router.set_main_route_name().")
 				return
 		var valid_class_name = [ISYSTEM_KEY, IMODEL_KEY, IUTILITY_KEY]
-		for key in _modules:
-			if valid_class_name.has(_modules[key].get_meta(CLASS_NAME_KEY)):
-				_modules[key].app = self
-				_modules[key].on_init()
+		for key in _container:
+			if valid_class_name.has(_container[key].get_meta(CLASS_NAME_KEY)):
+				_container[key].app = self
+				_container[key].on_init()
 		inited = true
 	
 	func _is_valid_class(cls_name: String, cls: Object):
