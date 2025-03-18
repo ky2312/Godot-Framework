@@ -9,6 +9,12 @@ script = ExtResource("1_amse2")
 offset_right = 345.0
 offset_bottom = 170.0
 
+[node name="Router" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "存在 {0} 个路由记录
+当前路由: {1}"
+
 [node name="Label" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2

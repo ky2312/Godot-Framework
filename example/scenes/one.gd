@@ -3,6 +3,7 @@ extends Node2D
 @onready var label: Label = %Label
 @onready var label_2: Label = %Label2
 @onready var button: Button = %Button
+@onready var router: Label = %Router
 var mob_model: MobModel
 
 func _ready() -> void:
@@ -16,10 +17,11 @@ func _ready() -> void:
 	GameManager.app.eventbus.register("achievement_kill_count", func(value):
 		label_2.text = value
 	).unregister_when_node_exit_tree(self)
+	router.text = router.text.format([len(GameManager.app.router.history), GameManager.app.router.current_route])
 
 # 视图层触发命令
 func _on_button_pressed() -> void:
 	GameManager.app.send_command(MobKillCommand.new())
 
 func _on_button_2_pressed() -> void:
-	get_tree().change_scene_to_file("res://example/scenes/two.tscn")
+	GameManager.app.router.push("two")
