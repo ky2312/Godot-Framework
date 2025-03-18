@@ -1,7 +1,7 @@
 extends Node
 class_name Framework
 
-class ISystem:
+class ISystem extends RefCounted:
 	func _init() -> void:
 		self.set_meta("class_name", "ISystem")
 	## 初始化时执行
@@ -9,7 +9,7 @@ class ISystem:
 	func on_init():
 		pass
 
-class IModel:
+class IModel extends RefCounted:
 	func _init() -> void:
 		self.set_meta("class_name", "IModel")
 	## 初始化时执行
@@ -17,7 +17,7 @@ class IModel:
 	func on_init():
 		pass
 
-class ICommand:
+class ICommand extends RefCounted:
 	func _init() -> void:
 		self.set_meta("class_name", "ICommand")
 	## 命令被调用时执行
@@ -25,7 +25,7 @@ class ICommand:
 	func on_execute():
 		pass
 
-class IUtility:
+class IUtility extends RefCounted:
 	func _init() -> void:
 		self.set_meta("class_name", "IUtility")
 	## 初始化时执行
@@ -34,7 +34,7 @@ class IUtility:
 		pass
 
 ## 可绑定的属性类
-class BindableProperty:
+class BindableProperty extends RefCounted:
 	## 实际的属性值
 	var _value
 	
@@ -71,7 +71,7 @@ class BindableProperty:
 	func unregister(callback: Callable):
 		UnRegisterExtension.new(_observer, "value_change", callback).unregister()
 
-class UnRegisterExtension:
+class UnRegisterExtension extends RefCounted:
 	var _callback: Callable
 	
 	var _event: Event
@@ -92,7 +92,7 @@ class UnRegisterExtension:
 		)
 
 ## 事件管理类
-class Event:
+class Event extends RefCounted:
 	var _m: Dictionary[String, Array]
 	
 	func register(key: String, callback: Callable):
@@ -115,7 +115,7 @@ class Event:
 			callback.callv([value])
 
 ## 框架主体类
-class App:
+class App extends RefCounted:
 	## 事件总线
 	var eventbus: Event = Event.new()
 	
