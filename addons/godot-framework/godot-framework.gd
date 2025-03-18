@@ -1,12 +1,18 @@
 extends Node
 class_name Framework
 
+const CLASS_NAME_KEY = "class_name"
+const ISYSTEM_KEY = "ISystem"
+const IMODEL_KEY = "IModel"
+const ICOMMAND_KEY = "ICommand"
+const IUTILITY_KEY = "IUtility"
+
 class ISystem extends RefCounted:
 	## 依附的应用
 	var app: App
 	
 	func _init() -> void:
-		self.set_meta("class_name", "ISystem")
+		self.set_meta(CLASS_NAME_KEY, ISYSTEM_KEY)
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
@@ -17,7 +23,7 @@ class IModel extends RefCounted:
 	var app: App
 	
 	func _init() -> void:
-		self.set_meta("class_name", "IModel")
+		self.set_meta(CLASS_NAME_KEY, IMODEL_KEY)
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
@@ -28,7 +34,7 @@ class ICommand extends RefCounted:
 	var app: App
 	
 	func _init() -> void:
-		self.set_meta("class_name", "ICommand")
+		self.set_meta(CLASS_NAME_KEY, ICOMMAND_KEY)
 	## 命令被调用时执行
 	## 子类应该实现
 	func on_execute():
@@ -39,7 +45,7 @@ class IUtility extends RefCounted:
 	var app: App
 	
 	func _init() -> void:
-		self.set_meta("class_name", "IUtility")
+		self.set_meta(CLASS_NAME_KEY, IUTILITY_KEY)
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
@@ -139,7 +145,7 @@ class App extends RefCounted:
 		if _modules.has(system_class):
 			push_error("Cannot register a system class with the same name.")
 			return
-		var ins = _is_valid_class("ISystem", system_class)
+		var ins = _is_valid_class(ISYSTEM_KEY, system_class)
 		if not ins:
 			push_error("This class is not a system class.")
 			return
@@ -158,7 +164,7 @@ class App extends RefCounted:
 		if _modules.has(model_class):
 			push_error("Cannot register a model class with the same name.")
 			return
-		var ins = _is_valid_class("IModel", model_class)
+		var ins = _is_valid_class(IMODEL_KEY, model_class)
 		if not ins:
 			push_error("This class is not a model class.")
 			return
@@ -177,7 +183,7 @@ class App extends RefCounted:
 		if _modules.has(utility_class):
 			push_error("Cannot register a utility class with the same name.")
 			return
-		var ins = _is_valid_class("IUtility", utility_class)
+		var ins = _is_valid_class(IUTILITY_KEY, utility_class)
 		if not ins:
 			push_error("This class is not a utility class.")
 			return
@@ -198,9 +204,9 @@ class App extends RefCounted:
 	
 	## 开始运行框架
 	func run():
-		var valid_class_name = ["ISystem", "IModel", "IUtility"]
+		var valid_class_name = [ISYSTEM_KEY, IMODEL_KEY, IUTILITY_KEY]
 		for key in _modules:
-			if valid_class_name.has(_modules[key].get_meta("class_name")):
+			if valid_class_name.has(_modules[key].get_meta(CLASS_NAME_KEY)):
 				_modules[key].app = self
 				_modules[key].on_init()
 	
@@ -208,6 +214,6 @@ class App extends RefCounted:
 		if not "new" in cls:
 			return
 		var ins = cls.new()
-		if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
+		if !(ins.has_meta(CLASS_NAME_KEY) and ins.get_meta(CLASS_NAME_KEY) == cls_name):
 			return
 		return ins
