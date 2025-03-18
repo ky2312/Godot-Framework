@@ -1,29 +1,33 @@
 extends Node
 class_name Framework
 
-## Godot的场景和节点
-#class IController:
-	#pass
-
 class ISystem:
+	func _init() -> void:
+		self.set_meta("class_name", "ISystem")
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
 		pass
 
 class IModel:
+	func _init() -> void:
+		self.set_meta("class_name", "IModel")
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
 		pass
 
 class ICommand:
+	func _init() -> void:
+		self.set_meta("class_name", "ICommand")
 	## 命令被调用时执行
 	## 子类应该实现
 	func on_execute():
 		pass
 
 class IUtility:
+	func _init() -> void:
+		self.set_meta("class_name", "IUtility")
 	## 初始化时执行
 	## 子类应该实现
 	func on_init():
@@ -119,39 +123,60 @@ class App:
 	var _modules: Dictionary
 	
 	## 注册系统层实例
-	func register_system(system_class: Variant, system: ISystem):
+	func register_system(system_class: Object) -> ISystem:
 		if _modules.has(system_class):
 			push_error("Cannot register a system class with the same name.")
 			return
-		_modules.set(system_class, system)
-		return system
+		var ins = _is_valid_class("ISystem", system_class)
+		if not ins:
+			push_error("This class is not a system class.")
+			return
+		_modules.set(system_class, ins)
+		return ins
 	
 	## 获取系统层实例
-	func get_system(system_class: Variant):
+	func get_system(system_class: Object) -> ISystem:
+		if not _modules.has(system_class):
+			push_error("Cannot get a system class with the name.")
+			return
 		return _modules.get(system_class)
 	
 	## 注册模型层实例
-	func register_model(model_class: Variant, model: IModel):
+	func register_model(model_class: Object) -> IModel:
 		if _modules.has(model_class):
 			push_error("Cannot register a model class with the same name.")
 			return
-		_modules.set(model_class, model)
-		return model
+		var ins = _is_valid_class("IModel", model_class)
+		if not ins:
+			push_error("This class is not a model class.")
+			return
+		_modules.set(model_class, ins)
+		return ins
 	
 	## 获取模型层实例
-	func get_model(model_class: Variant):
+	func get_model(model_class: Object) -> IModel:
+		if not _modules.has(model_class):
+			push_error("Cannot get a model class with the name.")
+			return
 		return _modules.get(model_class)
 	
 	## 注册工具层实例
-	func register_utility(utility_class: Variant, utility: IUtility):
+	func register_utility(utility_class: Object) -> IUtility:
 		if _modules.has(utility_class):
 			push_error("Cannot register a utility class with the same name.")
 			return
-		_modules.set(utility_class, utility)
-		return utility
+		var ins = _is_valid_class("IUtility", utility_class)
+		if not ins:
+			push_error("This class is not a utility class.")
+			return
+		_modules.set(utility_class, ins)
+		return ins
 	
 	## 获取工具层实例
-	func get_utility(utility_class: Variant):
+	func get_utility(utility_class: Object) -> IUtility:
+		if not _modules.has(utility_class):
+			push_error("Cannot get a utility class with the name.")
+			return
 		return _modules.get(utility_class)
 	
 	## 发送命令
@@ -164,3 +189,11 @@ class App:
 			if _modules[key].has_method("on_init"):
 				# 延迟调用，避免函数内存在调用还未完成的对象
 				_modules[key].on_init.call_deferred()
+	
+	func _is_valid_class(cls_name: String, cls: Object):
+		if not cls.has_method("new"):
+			return
+		var ins = cls.new()
+		if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
+			return
+		return ins

@@ -7,7 +7,7 @@ var mob_model: MobModel
 
 func _ready() -> void:
 	# 读取数据
-	mob_model = GameManager.app.get_system(MobModel) as MobModel
+	mob_model = GameManager.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.register_with_init_value(func(kill_count):
 		label.text = "已击杀 %s 次" % kill_count
 	).unregister_when_node_exit_tree(self)
