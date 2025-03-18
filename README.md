@@ -81,8 +81,9 @@ res://addons/godot-framework/
 
 ### 自动加载
 
-1. 启用插件后，它会自动将Framework单例添加到自动加载列表中。
-2. 您可以在项目 > 项目设置 > 全局 > 自动加载中确认这一点。
+1. 启用插件后，需要在一个脚本中配置应用（如：game_manager.gd）
+2. 把脚本添加到自动加载
+3. 您可以在项目 > 项目设置 > 全局 > 自动加载中确认这一点。
 
 ## 用法
 
@@ -113,7 +114,7 @@ class_name MobModel extends Framework.IModel
 var kill_count = Framework.BindableProperty.new(0)
 
 func on_init():
-	var storage = Framework.app.get_utility(Storage) as Storage
+	var storage = GameManager.app.get_utility(Storage) as Storage
 	var data = storage.load("./data")
 	if data.has("kill_count"):
 		kill_count.value = data["kill_count"]
@@ -129,15 +130,15 @@ class_name AchievementSystem extends Framework.ISystem
 
 var mob_model: MobModel
 func on_init():
-	mob_model = Framework.app.get_model(MobModel) as MobModel
+	mob_model = GameManager.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.register(func(kill_count):
 		match kill_count:
 			3:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
 			5:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
 			10:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
 	)
 
 ```
@@ -148,7 +149,7 @@ func on_init():
 class_name MobKillCommand extends Framework.ICommand
 
 func on_execute():
-	var mob_model = Framework.app.get_model(MobModel) as MobModel
+	var mob_model = GameManager.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.value += 1
 
 ```
@@ -160,37 +161,43 @@ func on_execute():
 ```
 extends Node
 
+var app: Framework.App
+
 func _init() -> void:
-	Framework.app.register_system(AchievementSystem, AchievementSystem.new())
-	Framework.app.register_model(MobModel, MobModel.new())
-	Framework.app.register_utility(Storage, Storage.new())
-	Framework.app.run()
-```
-
-### 读取数据
+	app = Framework.App.new()
+	app.register_system(AchievementSystem, AchievementSystem.new())
+	app.register_model(MobModel, MobModel.new())
+	app.register_utility(Storage, Storage.new())
+	app.run()
 
 ```
-func _ready():
-	var mob_model = Framework.app.get_system(MobModel) as MobModel
+
+### 具体应用
+
+```
+extends Node2D
+
+@onready var label: Label = %Label
+@onready var label_2: Label = %Label2
+@onready var button: Button = %Button
+var mob_model: MobModel
+
+func _ready() -> void:
+	# 读取数据
+	mob_model = GameManager.app.get_system(MobModel) as MobModel
 	mob_model.kill_count.register_with_init_value(func(kill_count):
 		label.text = "已击杀 %s 次" % kill_count
 	).unregister_when_node_exit_tree(self)
-```
-
-### 监听数据更新
-
-```
-func _ready():
-	Framework.app.eventbus.register("achievement_kill_count", func(value):
+	
+	# 监听数据更新
+	GameManager.app.eventbus.register("achievement_kill_count", func(value):
 		label_2.text = value
 	).unregister_when_node_exit_tree(self)
-```
 
-### 视图层触发命令
-
-```
+# 视图层触发命令
 func _on_button_pressed() -> void:
-	Framework.app.send_command(MobKillCommand.new())
+	GameManager.app.send_command(MobKillCommand.new())
+
 ```
 
 ## 故障排除
@@ -198,4 +205,3 @@ func _on_button_pressed() -> void:
 ### 无法获取到Framework
 
 * 请确保已启用插件。
-* 请确保已启用自动加载脚本。
