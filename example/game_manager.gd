@@ -1,7 +1,10 @@
 extends Node
 
+var app: Framework.App
+
 func _init() -> void:
-	Framework.app.register_system(AchievementSystem, AchievementSystem.new())
-	Framework.app.register_model(MobModel, MobModel.new())
-	Framework.app.register_utility(Storage, Storage.new())
-	Framework.app.run()
+	app = Framework.App.new()
+	app.register_system(AchievementSystem, AchievementSystem.new())
+	app.register_model(MobModel, MobModel.new())
+	app.register_utility(Storage, Storage.new())
+	app.run()

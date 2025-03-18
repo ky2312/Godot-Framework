@@ -2,13 +2,13 @@ class_name AchievementSystem extends Framework.ISystem
 
 var mob_model: MobModel
 func on_init():
-	mob_model = Framework.app.get_model(MobModel) as MobModel
+	mob_model = GameManager.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.register(func(kill_count):
 		match kill_count:
 			3:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
 			5:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
 			10:
-				Framework.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
+				GameManager.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
 	)

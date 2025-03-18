@@ -1,9 +1,5 @@
 extends Node
-
-var app: App
-
-func _init() -> void:
-	app = App.new()
+class_name Framework
 
 ## Godot的场景和节点
 #class IController:
@@ -166,4 +162,5 @@ class App:
 	func run():
 		for key in _modules:
 			if _modules[key].has_method("on_init"):
-				_modules[key].on_init()
+				# 延迟调用，避免函数内存在调用还未完成的对象
+				_modules[key].on_init.call_deferred()
