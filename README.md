@@ -114,7 +114,7 @@ class_name MobModel extends Framework.IModel
 var kill_count = Framework.BindableProperty.new(0)
 
 func on_init():
-	var storage = GameManager.app.get_utility(Storage) as Storage
+	var storage = self.app.get_utility(Storage) as Storage
 	var data = storage.load("./data")
 	if data.has("kill_count"):
 		kill_count.value = data["kill_count"]
@@ -130,15 +130,15 @@ class_name AchievementSystem extends Framework.ISystem
 
 var mob_model: MobModel
 func on_init():
-	mob_model = GameManager.app.get_model(MobModel) as MobModel
+	mob_model = self.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.register(func(kill_count):
 		match kill_count:
 			3:
-				GameManager.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
+				self.app.eventbus.trigger("achievement_kill_count", "达成普通成就，击杀小怪%s只" % kill_count)
 			5:
-				GameManager.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
+				self.app.eventbus.trigger("achievement_kill_count", "达成白银成就，击杀小怪%s只" % kill_count)
 			10:
-				GameManager.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
+				self.app.eventbus.trigger("achievement_kill_count", "达成黄金成就，击杀小怪%s只" % kill_count)
 	)
 
 ```
@@ -149,7 +149,7 @@ func on_init():
 class_name MobKillCommand extends Framework.ICommand
 
 func on_execute():
-	var mob_model = GameManager.app.get_model(MobModel) as MobModel
+	var mob_model = self.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.value += 1
 
 ```
