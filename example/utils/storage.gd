@@ -8,6 +8,6 @@ func load(path: String) -> Dictionary:
 	else:
 		return {}
 
-func save(path: String, value: Variant):
+func save(path: String, value):
 	var file = FileAccess.open(path, FileAccess.ModeFlags.WRITE)
 	file.store_string(JSON.stringify(value))

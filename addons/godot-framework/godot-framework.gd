@@ -2,6 +2,9 @@ extends Node
 class_name Framework
 
 class ISystem extends RefCounted:
+	## 依附的应用
+	var app: App
+	
 	func _init() -> void:
 		self.set_meta("class_name", "ISystem")
 	## 初始化时执行
@@ -10,6 +13,9 @@ class ISystem extends RefCounted:
 		pass
 
 class IModel extends RefCounted:
+	## 依附的应用
+	var app: App
+	
 	func _init() -> void:
 		self.set_meta("class_name", "IModel")
 	## 初始化时执行
@@ -18,6 +24,9 @@ class IModel extends RefCounted:
 		pass
 
 class ICommand extends RefCounted:
+	## 依附的应用
+	var app: App
+	
 	func _init() -> void:
 		self.set_meta("class_name", "ICommand")
 	## 命令被调用时执行
@@ -26,6 +35,9 @@ class ICommand extends RefCounted:
 		pass
 
 class IUtility extends RefCounted:
+	## 依附的应用
+	var app: App
+	
 	func _init() -> void:
 		self.set_meta("class_name", "IUtility")
 	## 初始化时执行
@@ -108,7 +120,7 @@ class Event extends RefCounted:
 		if len(arr) == 0:
 			_m.erase(key)
 	
-	func trigger(key: String, value: Variant):
+	func trigger(key: String, value):
 		if not _m.has(key):
 			return
 		for callback in _m.get(key):
@@ -181,17 +193,19 @@ class App extends RefCounted:
 	
 	## 发送命令
 	func send_command(command: ICommand):
+		command.app = self
 		command.on_execute()
 	
 	## 开始运行框架
 	func run():
+		var valid_class_name = ["ISystem", "IModel", "IUtility"]
 		for key in _modules:
-			if _modules[key].has_method("on_init"):
-				# 延迟调用，避免函数内存在调用还未完成的对象
-				_modules[key].on_init.call_deferred()
+			if valid_class_name.has(_modules[key].get_meta("class_name")):
+				_modules[key].app = self
+				_modules[key].on_init()
 	
 	func _is_valid_class(cls_name: String, cls: Object):
-		if not cls.has_method("new"):
+		if not "new" in cls:
 			return
 		var ins = cls.new()
 		if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
