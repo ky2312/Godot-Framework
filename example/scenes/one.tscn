@@ -12,27 +12,25 @@ offset_bottom = 170.0
 [node name="Router" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "存在 {0} 个路由记录
-当前路由: {1}"
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="KillLabel" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 6
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="VBoxContainer"]
+[node name="AchievementLabel" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Button" type="Button" parent="VBoxContainer"]
+[node name="KillButton" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "点击击杀1次小怪"
 
-[node name="Button2" type="Button" parent="VBoxContainer"]
+[node name="JumpButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "去下一个场景"
 
-[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="VBoxContainer/KillButton" to="." method="_on_kill_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/JumpButton" to="." method="_on_jump_button_pressed"]

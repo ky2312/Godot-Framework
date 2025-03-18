@@ -148,39 +148,41 @@ class Router extends RefCounted:
 		route.path = path
 		_m.set(name, route)
 	
-	func go(step: int):
+	func go(step: int) -> Error:
 		if step == 0:
-			return
+			return FAILED
 		if _current_route_index + step >= len(history):
 			push_warning("There is no valid route.")
-			return
+			return FAILED
 		_current_route_index += step
-		_change_scene(current_route.path)
+		return _change_scene(current_route.path)
 	
-	func push(name: String, is_record: bool = true, is_jump: bool = true):
+	func push(name: String, is_record: bool = true, is_jump: bool = true) -> Error:
 		if not _m.has(name):
 			push_error("The route name that does not exist.")
-			return
+			return FAILED
 		var route = _m.get(name)
 		if is_record:
 			_current_route_index += 1
 			history.resize(_current_route_index + 1)
 			history[_current_route_index] = route
 		if is_jump:
-			_change_scene(route.path)
+			return _change_scene(route.path)
+		return OK
 	
-	func back():
+	func back() -> Error:
 		if _current_route_index <= 0:
 			push_warning("There is no valid route.")
-			return
+			return FAILED
 		_current_route_index -= 1
-		_change_scene(current_route.path)
+		return _change_scene(current_route.path)
 	
-	func _change_scene(path: String):
+	func _change_scene(path: String) -> Error:
 		var err = _window.get_tree().change_scene_to_file(path)
 		if err != OK:
 			push_error("Unable to navigate to the route, error code {0}.".format([err]))
-			return
+			return err
+		return OK
 	
 ## 事件管理类
 class Event extends RefCounted:
