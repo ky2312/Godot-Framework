@@ -3,7 +3,7 @@ extends RefCounted
 
 var history: Array[Dictionary]
 
-var _window: Window
+var _node: Node
 
 var _main_route_name: String
 var main_route_name: String:
@@ -18,8 +18,8 @@ var _current_route_index: int = -1
 
 var _m: Dictionary[String, Dictionary]
 
-func _init(window: Window) -> void:
-	_window = window
+func _init(node: Node) -> void:
+	_node = node
 
 ## 设置主路由(主场景)
 func set_main_route_name(name: String):
@@ -68,7 +68,7 @@ func back() -> Error:
 	return _change_scene(current_route.path)
 
 func _change_scene(path: String) -> Error:
-	var err = _window.get_tree().change_scene_to_file(path)
+	var err = _node.get_tree().change_scene_to_file(path)
 	if err != OK:
 		push_error("Unable to navigate to the route, error code {0}.".format([err]))
 		return err

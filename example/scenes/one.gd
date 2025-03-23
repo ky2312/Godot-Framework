@@ -1,5 +1,6 @@
 extends Node2D
 
+@export var kill_audio: AudioStream
 @onready var kill_label: Label = %KillLabel
 @onready var achievement_label: Label = %AchievementLabel
 @onready var kill_button: Button = %KillButton
@@ -21,6 +22,8 @@ func _ready() -> void:
 
 # 视图层触发命令
 func _on_kill_button_pressed() -> void:
+	GameManager.app.audio.play_sfx(kill_audio)
+	GameManager.app.audio.set_sfx_volume(0.1)
 	GameManager.app.send_command(MobKillCommand.new())
 
 func _on_jump_button_pressed() -> void:
