@@ -8,6 +8,7 @@ extends Node2D
 var mob_model: MobModel
 
 func _ready() -> void:
+	GameManager.app.logger.debug("进入one场景")
 	# 读取数据
 	mob_model = GameManager.app.get_model(MobModel) as MobModel
 	mob_model.kill_count.register_with_init_value(func(kill_count):
@@ -19,6 +20,9 @@ func _ready() -> void:
 		achievement_label.text = value
 	).unregister_when_node_exit_tree(self)
 	router.text = "存在 {0} 个路由记录\n当前路由: {1}".format([len(GameManager.app.router.history), GameManager.app.router.current_route])
+
+func _exit_tree() -> void:
+	GameManager.app.logger.debug("离开one场景")
 
 # 视图层触发命令
 func _on_kill_button_pressed() -> void:

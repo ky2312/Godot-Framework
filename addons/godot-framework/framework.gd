@@ -10,6 +10,7 @@ const UnRegisterExtension = preload("res://addons/godot-framework/packages/unreg
 const Router = preload("res://addons/godot-framework/packages/router.gd")
 const Event = preload("res://addons/godot-framework/packages/event.gd")
 const Audio = preload("res://addons/godot-framework/packages/audio.gd")
+const Logger = preload("res://addons/godot-framework/packages/logger.gd")
 
 var inited: bool = false
 
@@ -17,11 +18,16 @@ var _container: Dictionary
 
 var eventbus: Event = Event.new()
 
+var logger: Logger = Logger.new()
+
 ## 路由模块需要调用enable_router才有效
 var router: Router
 
 ## 音频管理器模块需要调用enable_audio才有效
 var audio: Audio
+
+func _init() -> void:
+	pass
 
 ## 注册系统层实例
 func register_system(system_class: Object) -> ISystem:
