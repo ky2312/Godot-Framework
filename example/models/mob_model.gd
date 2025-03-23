@@ -1,4 +1,4 @@
-class_name MobModel extends Framework.IModel
+class_name MobModel extends FrameworkIModel
 
 var kill_count = Framework.BindableProperty.new(0)
 

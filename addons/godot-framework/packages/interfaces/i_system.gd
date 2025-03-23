@@ -1,5 +1,5 @@
 ## 系统接口
-extends RefCounted
+class_name FrameworkISystem extends RefCounted
 
 ## 依附的应用
 var app: Framework

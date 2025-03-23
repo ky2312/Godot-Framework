@@ -1,4 +1,4 @@
-class_name AchievementSystem extends Framework.ISystem
+class_name AchievementSystem extends FrameworkISystem
 
 var mob_model: MobModel
 func on_init():

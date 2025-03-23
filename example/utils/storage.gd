@@ -1,4 +1,4 @@
-class_name Storage extends Framework.IUtility
+class_name Storage extends FrameworkIUtility
 
 func load(path: String) -> Dictionary:
 	if FileAccess.file_exists(path):

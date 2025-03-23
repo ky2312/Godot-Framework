@@ -1,5 +1,5 @@
 ## 命令接口
-extends RefCounted
+class_name FrameworkICommand extends RefCounted
 
 ## 依附的应用
 var app: Framework
