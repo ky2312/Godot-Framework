@@ -94,7 +94,8 @@ func _get_base_data(models: Array[FrameworkIModel]) -> Dictionary:
 		if !section_name:
 			break
 		for o in pl:
-			if o.type == Variant.Type.TYPE_OBJECT and model[o.name] is FrameworkBindableProperty:
+			var property = model.get(o.name)
+			if property and property is FrameworkBindableProperty:
 				section.set(o.name, model[o.name].value)
 		base_data.set(section_name, section)
 	return base_data
