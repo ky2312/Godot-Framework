@@ -20,6 +20,7 @@ func _ready() -> void:
 	app.router.register("two", "res://example/scenes/two.tscn")
 	app.router.set_main_route_name()
 	app.audio.play_background_music(background_music)
+	app.audio.set_volume(50)
 	
 	app.logger.info("启动游戏")
 	

@@ -70,16 +70,22 @@ func play_sfx(stream: AudioStream, pitch: float = 1.0):
 		_sfx_audio_players.push_back(audio_player)
 
 ## 设置总音量
+## 单位百分制
 func set_volume(volume: float):
-	AudioServer.set_bus_volume_linear(BUS.MASTER_BUS, volume)
+	var v = volume / 100.0
+	AudioServer.set_bus_volume_linear(BUS.MASTER_BUS, v)
 
 ## 设置背景音量
+## 单位百分制
 func set_background_volume(volume: float):
-	AudioServer.set_bus_volume_linear(BUS.BACKGROUND_MUSIC_BUS, volume)
+	var v = volume / 100.0
+	AudioServer.set_bus_volume_linear(BUS.BACKGROUND_MUSIC_BUS, v)
 
 ## 设置音效音量
+## 单位百分制
 func set_sfx_volume(volume: float):
-	AudioServer.set_bus_volume_linear(BUS.SFX_BUS, volume)
+	var v = volume / 100.0
+	AudioServer.set_bus_volume_linear(BUS.SFX_BUS, v)
 
 ## 渐入
 func _play_and_fade_in(audio_player: AudioStreamPlayer, fade_duration: float):

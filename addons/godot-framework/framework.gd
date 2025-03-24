@@ -125,6 +125,11 @@ func run(node: Node):
 	if inited:
 		return
 	
+	if enabled_router:
+		router = Router.new(node)
+	if enabled_audio:
+		audio = Audio.new(node)
+	
 	# 加载默认模块
 	register_utility(ArchiveUtility)
 	
@@ -133,11 +138,6 @@ func run(node: Node):
 		if valid_class_name.has(_container[key].get_meta("class_name")):
 			_container[key].app = self
 			_container[key].on_init()
-	
-	if enabled_router:
-		router = Router.new(node)
-	if enabled_audio:
-		audio = Audio.new(node)
 	
 	self.node = node
 	inited = true
