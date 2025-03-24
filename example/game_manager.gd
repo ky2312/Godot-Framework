@@ -10,7 +10,8 @@ func _ready() -> void:
 	app.register_system(AchievementSystem)
 	app.register_system(ReloadSystem)
 	app.register_model(PlayerModel)
-	app.register_utility(Storage)
+	app.register_model(MobModel)
+	app.register_utility(StorageUtility)
 	
 	app.enable_router(self)
 	app.router.register("one", "res://example/scenes/one.tscn")

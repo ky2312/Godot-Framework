@@ -16,20 +16,28 @@ offset_bottom = 170.0
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="KillLabel" type="Label" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="KillLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 6
 horizontal_alignment = 1
+
+[node name="MobLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="AchievementLabel" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="KillButton" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "点击击杀1次小怪"
 
 [node name="JumpButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2

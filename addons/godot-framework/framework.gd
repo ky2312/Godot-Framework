@@ -110,6 +110,10 @@ func run():
 		if not router.main_route_name:
 			logger.error("The main route has not been set. Please use router.set_main_route_name().")
 			return
+	
+	# 加载默认模块
+	register_utility(ArchiveUtility)
+	
 	var valid_class_name = ["ISystem", "IModel", "IUtility"]
 	for key in _container:
 		if valid_class_name.has(_container[key].get_meta("class_name")):
@@ -118,13 +122,24 @@ func run():
 	inited = true
 
 func reload(node: Node):
+	# TODO
 	node.get_tree().reload_current_scene()
 	logger.info("reloaded")
 	eventbus.trigger(EVENT_NAME_RELOADED, null)
 
+func get_models() -> Array[IModel]:
+	var models: Array[IModel]
+	var container = _container
+	for cls in container:
+		var ins = container[cls]
+		if ins.get_meta("class_name") == "IModel":
+			models.push_back(ins)
+	return models
+
 func _is_valid_class(cls_name: String, cls: Object):
 	if not "new" in cls:
 		return
+	# 不要在模块内使用_init(), 而是使用on_init()
 	var ins = cls.new()
 	if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
 		return

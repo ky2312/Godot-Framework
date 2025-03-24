@@ -1,5 +1,5 @@
 ## 可绑定的属性类
-extends RefCounted
+class_name FrameworkBindableProperty extends RefCounted
 
 ## 实际的属性值
 var _value
