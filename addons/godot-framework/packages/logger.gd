@@ -45,6 +45,9 @@ func _build(level: LEVEL, content):
 	for renderer in renderers:
 		renderer.build(log, formatter)
 
+func set_theme(theme: String):
+	self.theme = theme
+
 func set_level(level: LEVEL):
 	self.current_level = level
 
