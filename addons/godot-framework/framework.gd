@@ -17,7 +17,7 @@ var inited: bool = false
 var _container: Dictionary
 
 ## 场景被重置
-const EVENT_NAME_RELOADED = "RELOADED"
+const EVENT_NAME_RELOADED_SCENE = "RELOADED_SCENE"
 var eventbus: Event = Event.new()
 
 var logger: Logger = Logger.new()
@@ -121,11 +121,10 @@ func run():
 			_container[key].on_init()
 	inited = true
 
-func reload(node: Node):
-	# TODO
+func reload_scene(node: Node):
 	node.get_tree().reload_current_scene()
-	logger.info("reloaded")
-	eventbus.trigger(EVENT_NAME_RELOADED, null)
+	logger.info("reloaded scene")
+	eventbus.trigger(EVENT_NAME_RELOADED_SCENE, null)
 
 func get_models() -> Array[IModel]:
 	var models: Array[IModel]

@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 func _on_reload_button_pressed() -> void:
-	GameManager.app.reload(self)
+	GameManager.app.reload_scene(self)
 
 func _on_save_button_pressed() -> void:
 	GameManager.app.send_command(GameSaveCommand.new())
