@@ -1,5 +1,5 @@
 ## 日志
-extends RefCounted
+class_name FrameworkLogger extends RefCounted
 
 ## 日志等级
 enum LEVEL {
@@ -9,53 +9,74 @@ enum LEVEL {
 	DEBUG,
 }
 
-var current_level: LEVEL = LEVEL.WARNING
-
-var theme: String
+var level: LEVEL = LEVEL.WARNING
 
 var formatter: Formatter = Formatter.new()
 
 var renderers: Array[Renderer] = [ConsoleRenderer.new()]
 
+var _root_logger: SubLogger
+
 func _init(theme: String = "Logger") -> void:
-	self.theme = theme
+	_root_logger = SubLogger.new(self, theme)
 
 func error(content):
-	if current_level < LEVEL.ERROR:
-		return
-	_build(LEVEL.ERROR, content)
+	return _root_logger.error(content)
 
 func warning(content):
-	if current_level < LEVEL.WARNING:
-		return
-	_build(LEVEL.WARNING, content)
+	return _root_logger.warning(content)
 
 func info(content):
-	if current_level < LEVEL.INFO:
-		return
-	_build(LEVEL.INFO, content)
-	
-func debug(content):
-	if current_level < LEVEL.DEBUG:
-		return
-	_build(LEVEL.DEBUG, content)
-	
-func _build(level: LEVEL, content):
-	var log := Log.new(level, theme, content)
-	for renderer in renderers:
-		renderer.build(log, formatter)
+	return _root_logger.info(content)
 
-func set_theme(theme: String):
-	self.theme = theme
+func debug(content):
+	return _root_logger.debug(content)
 
 func set_level(level: LEVEL):
-	self.current_level = level
+	self.level = level
 
 func set_formatter(formatter: Formatter):
 	self.formatter = formatter
 
 func add_renderer(renderer: Renderer):
 	self.renderers.push_back(renderer)
+
+func create_logger(theme: String) -> SubLogger:
+	return SubLogger.new(self, theme)
+
+class SubLogger:
+	var _parent: FrameworkLogger
+	
+	var theme: String
+
+	func _init(parent: FrameworkLogger, theme: String = "Logger") -> void:
+		self.theme = theme
+		self._parent = parent
+
+	func error(content):
+		if _parent.level < LEVEL.ERROR:
+			return
+		_build(LEVEL.ERROR, content)
+
+	func warning(content):
+		if _parent.level < LEVEL.WARNING:
+			return
+		_build(LEVEL.WARNING, content)
+
+	func info(content):
+		if _parent.level < LEVEL.INFO:
+			return
+		_build(LEVEL.INFO, content)
+		
+	func debug(content):
+		if _parent.level < LEVEL.DEBUG:
+			return
+		_build(LEVEL.DEBUG, content)
+		
+	func _build(level: LEVEL, content):
+		var log := Log.new(level, theme, content)
+		for renderer in _parent.renderers:
+			renderer.build(log, _parent.formatter)
 
 class Log:
 	var level: LEVEL

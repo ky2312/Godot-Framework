@@ -22,3 +22,6 @@ func _ready() -> void:
 	app.audio.play_background_music(background_music)
 	
 	app.logger.info("启动游戏")
+	
+	var logger = app.logger.create_logger("GameManager")
+	logger.debug("在GameManager内部")
