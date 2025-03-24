@@ -14,6 +14,8 @@ const Logger = preload("res://addons/godot-framework/packages/logger.gd")
 
 var inited: bool = false
 
+var node: Node
+
 var _container: Dictionary
 
 ## 场景被重置
@@ -24,9 +26,11 @@ var logger: Logger = Logger.new()
 
 ## 路由模块需要调用enable_router才有效
 var router: Router
+var enabled_router := false
 
 ## 音频管理器模块需要调用enable_audio才有效
 var audio: Audio
+var enabled_audio := false
 
 func _init() -> void:
 	pass
@@ -94,34 +98,14 @@ func send_command(command: ICommand):
 	command.on_execute()
 
 ## 开启路由器
-func enable_router(node: Node):
-	router = Router.new(node)
+func enable_router():
+	enabled_router = true
 
 ## 开启音频管理器
-func enable_audio(node: Node):
-	audio = Audio.new(node)
+func enable_audio():
+	enabled_audio = true
 
-## 开始运行框架
-## 会检测配置是否正确
-func run():
-	if inited:
-		return
-	if !!router:
-		if not router.main_route_name:
-			logger.error("The main route has not been set. Please use router.set_main_route_name().")
-			return
-	
-	# 加载默认模块
-	register_utility(ArchiveUtility)
-	
-	var valid_class_name = ["ISystem", "IModel", "IUtility"]
-	for key in _container:
-		if valid_class_name.has(_container[key].get_meta("class_name")):
-			_container[key].app = self
-			_container[key].on_init()
-	inited = true
-
-func reload_scene(node: Node):
+func reload_scene():
 	node.get_tree().reload_current_scene()
 	logger.info("reloaded scene")
 	eventbus.trigger(EVENT_NAME_RELOADED_SCENE, null)
@@ -134,6 +118,29 @@ func get_models() -> Array[IModel]:
 		if ins.get_meta("class_name") == "IModel":
 			models.push_back(ins)
 	return models
+
+## 开始运行框架
+## 会检测配置是否正确
+func run(node: Node):
+	if inited:
+		return
+	
+	# 加载默认模块
+	register_utility(ArchiveUtility)
+	
+	var valid_class_name = ["ISystem", "IModel", "IUtility"]
+	for key in _container:
+		if valid_class_name.has(_container[key].get_meta("class_name")):
+			_container[key].app = self
+			_container[key].on_init()
+	
+	if enabled_router:
+		router = Router.new(node)
+	if enabled_audio:
+		audio = Audio.new(node)
+	
+	self.node = node
+	inited = true
 
 func _is_valid_class(cls_name: String, cls: Object):
 	if not "new" in cls:

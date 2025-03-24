@@ -22,7 +22,12 @@ func _init(node: Node) -> void:
 	_node = node
 
 ## 设置主路由(主场景)
-func set_main_route_name(name: String):
+## 默认为第一个注册的路由名称
+func set_main_route_name(name: String = ""):
+	if !name:
+		for k in _m:
+			name = k
+			break
 	_main_route_name = name
 	push(name, true, false)
 	
