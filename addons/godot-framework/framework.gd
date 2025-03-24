@@ -16,6 +16,8 @@ var inited: bool = false
 
 var _container: Dictionary
 
+## 场景被重置
+const EVENT_NAME_RELOADED = "RELOADED"
 var eventbus: Event = Event.new()
 
 var logger: Logger = Logger.new()
@@ -114,6 +116,11 @@ func run():
 			_container[key].app = self
 			_container[key].on_init()
 	inited = true
+
+func reload(node: Node):
+	node.get_tree().reload_current_scene()
+	logger.info("reloaded")
+	eventbus.trigger(EVENT_NAME_RELOADED, null)
 
 func _is_valid_class(cls_name: String, cls: Object):
 	if not "new" in cls:

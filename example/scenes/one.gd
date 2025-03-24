@@ -5,14 +5,14 @@ extends Node2D
 @onready var achievement_label: Label = %AchievementLabel
 @onready var kill_button: Button = %KillButton
 @onready var router: Label = %Router
-var mob_model: MobModel
+var model: PlayerModel
 
 func _ready() -> void:
 	GameManager.app.logger.debug("进入one场景")
 	# 读取数据
-	mob_model = GameManager.app.get_model(MobModel) as MobModel
-	mob_model.kill_count.register_with_init_value(func(kill_count):
-		kill_label.text = "已击杀 {0} 次".format([kill_count])
+	model = GameManager.app.get_model(PlayerModel) as PlayerModel
+	model.kill_count.register_with_init_value(func(kill_count):
+		kill_label.text = "已击杀 {0} 次，上次存档点已击杀 {1} 次。".format([kill_count, model.achievement_kill_count.value])
 	).unregister_when_node_exit_tree(self)
 	
 	# 监听数据更新

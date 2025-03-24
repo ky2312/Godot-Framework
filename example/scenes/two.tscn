@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ccvdjvrogxhvx"]
+[gd_scene load_steps=3 format=3 uid="uid://ccvdjvrogxhvx"]
 
 [ext_resource type="Script" uid="uid://bksgajghasb7" path="res://example/scenes/two.gd" id="1_fikf5"]
+[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/scenes/hud.tscn" id="2_7oftu"]
 
 [node name="Two" type="Node2D"]
 script = ExtResource("1_fikf5")
@@ -21,5 +22,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "返回上一个场景"
+
+[node name="HUD" parent="." instance=ExtResource("2_7oftu")]
 
 [connection signal="pressed" from="VBoxContainer/JumpButton" to="." method="_on_jump_button_pressed"]

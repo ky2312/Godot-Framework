@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cqdqtdqmu101u"]
+[gd_scene load_steps=4 format=3 uid="uid://cqdqtdqmu101u"]
 
 [ext_resource type="Script" uid="uid://ccvswn5rjbfh5" path="res://example/scenes/one.gd" id="1_amse2"]
 [ext_resource type="AudioStream" uid="uid://bccb6i611a1at" path="res://example/assets/sounds/tap.wav" id="2_ofvc7"]
+[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/scenes/hud.tscn" id="3_1mo1c"]
 
 [node name="One" type="Node2D"]
 script = ExtResource("1_amse2")
@@ -33,6 +34,8 @@ text = "点击击杀1次小怪"
 [node name="JumpButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "去下一个场景"
+
+[node name="HUD" parent="." instance=ExtResource("3_1mo1c")]
 
 [connection signal="pressed" from="VBoxContainer/KillButton" to="." method="_on_kill_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/JumpButton" to="." method="_on_jump_button_pressed"]

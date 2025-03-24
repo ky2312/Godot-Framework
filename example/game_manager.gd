@@ -8,7 +8,8 @@ func _ready() -> void:
 	app = Framework.new()
 	
 	app.register_system(AchievementSystem)
-	app.register_model(MobModel)
+	app.register_system(ReloadSystem)
+	app.register_model(PlayerModel)
 	app.register_utility(Storage)
 	
 	app.enable_router(self)
