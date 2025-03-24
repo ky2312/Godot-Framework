@@ -34,5 +34,16 @@ func register_with_init_value(callback: Callable):
 	register(callback)
 	return Framework.UnRegisterExtension.new(_observer, "value_change", callback)
 
+static func register_with_init_value_wait_unregister(node: Node, bindablePropertys: Array[FrameworkBindableProperty], callback: Callable):
+	var values := []
+	for i in range(len(bindablePropertys)):
+		var b = bindablePropertys[i]
+		values.push_back(b.value)
+		b.register_with_init_value(
+			func(v):
+				values[i] = v
+				callback.callv(values)
+		).unregister_when_node_exit_tree(node)
+
 func unregister(callback: Callable):
 	Framework.UnRegisterExtension.new(_observer, "value_change", callback).unregister()

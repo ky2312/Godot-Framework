@@ -6,25 +6,35 @@ extends Node2D
 @onready var achievement_label: Label = %AchievementLabel
 @onready var kill_button: Button = %KillButton
 @onready var router: Label = %Router
-var model: PlayerModel
 
 func _ready() -> void:
 	GameManager.app.logger.debug("进入one场景")
 	# 读取数据并监听数据更新
-	model = GameManager.app.get_model(PlayerModel) as PlayerModel
-	model.kill_count.register_with_init_value(
-		func(kill_count):
-			kill_label.text = "已击杀 {0} 次，".format([kill_count])
-	).unregister_when_node_exit_tree(self)
-	model.achievement_kill_count.register_with_init_value(
-		func(achievement_kill_count):
-			mob_label.text = "上次存档点已击杀 {0} 次。".format([achievement_kill_count])
-	).unregister_when_node_exit_tree(self)
+	var model_player = GameManager.app.get_model(PlayerModel) as PlayerModel
 	var model_mob = GameManager.app.get_model(MobModel) as MobModel
-	model_mob.count.register_with_init_value(
-		func(count):
+	# 两种使用方式
+	# 便捷使用多个值
+	FrameworkBindableProperty.register_with_init_value_wait_unregister(
+		self,
+		[model_player.kill_count, model_player.achievement_kill_count, model_mob.count],
+		func(kill_count, achievement_kill_count, count):
+			kill_label.text = "已击杀 {0} 次，".format([kill_count])
+			mob_label.text = "上次存档点已击杀 {0} 次。".format([achievement_kill_count])
 			kill_button.text = "点击击杀1只小怪，剩余 {0} 只".format([count])
-	).unregister_when_node_exit_tree(self)
+	)
+	# 通常使用单个值
+	#model_player.kill_count.register_with_init_value(
+		#func(kill_count):
+			#kill_label.text = "已击杀 {0} 次，".format([kill_count])
+	#).unregister_when_node_exit_tree(self)
+	#model_player.achievement_kill_count.register_with_init_value(
+		#func(achievement_kill_count):
+			#mob_label.text = "上次存档点已击杀 {0} 次。".format([achievement_kill_count])
+	#).unregister_when_node_exit_tree(self)
+	#model_mob.count.register_with_init_value(
+		#func(count):
+			#kill_button.text = "点击击杀1只小怪，剩余 {0} 只".format([count])
+	#).unregister_when_node_exit_tree(self)
 	
 	# 监听数据更新
 	GameManager.app.eventbus.register("achievement_killed_count", func(value):
