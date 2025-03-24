@@ -34,11 +34,11 @@ func _init() -> void:
 ## 注册系统层实例
 func register_system(system_class: Object) -> ISystem:
 	if _container.has(system_class):
-		push_error("Cannot register a system class with the same name.")
+		logger.error("Cannot register a system class with the same name.")
 		return
 	var ins = _is_valid_class("ISystem", system_class)
 	if not ins:
-		push_error("This class is not a system class.")
+		logger.error("This class is not a system class.")
 		return
 	_container.set(system_class, ins)
 	return ins
@@ -46,18 +46,18 @@ func register_system(system_class: Object) -> ISystem:
 ## 获取系统层实例
 func get_system(system_class: Object) -> ISystem:
 	if not _container.has(system_class):
-		push_error("Cannot get a system class with the name.")
+		logger.error("Cannot get a system class with the name.")
 		return
 	return _container.get(system_class)
 
 ## 注册模型层实例
 func register_model(model_class: Object) -> IModel:
 	if _container.has(model_class):
-		push_error("Cannot register a model class with the same name.")
+		logger.error("Cannot register a model class with the same name.")
 		return
 	var ins = _is_valid_class("IModel", model_class)
 	if not ins:
-		push_error("This class is not a model class.")
+		logger.error("This class is not a model class.")
 		return
 	_container.set(model_class, ins)
 	return ins
@@ -65,18 +65,18 @@ func register_model(model_class: Object) -> IModel:
 ## 获取模型层实例
 func get_model(model_class: Object) -> IModel:
 	if not _container.has(model_class):
-		push_error("Cannot get a model class with the name.")
+		logger.error("Cannot get a model class with the name.")
 		return
 	return _container.get(model_class)
 
 ## 注册工具层实例
 func register_utility(utility_class: Object) -> IUtility:
 	if _container.has(utility_class):
-		push_error("Cannot register a utility class with the same name.")
+		logger.error("Cannot register a utility class with the same name.")
 		return
 	var ins = _is_valid_class("IUtility", utility_class)
 	if not ins:
-		push_error("This class is not a utility class.")
+		logger.error("This class is not a utility class.")
 		return
 	_container.set(utility_class, ins)
 	return ins
@@ -84,7 +84,7 @@ func register_utility(utility_class: Object) -> IUtility:
 ## 获取工具层实例
 func get_utility(utility_class: Object) -> IUtility:
 	if not _container.has(utility_class):
-		push_error("Cannot get a utility class with the name.")
+		logger.error("Cannot get a utility class with the name.")
 		return
 	return _container.get(utility_class)
 
@@ -108,7 +108,7 @@ func run():
 		return
 	if !!router:
 		if not router.main_route_name:
-			push_error("The main route has not been set. Please use router.set_main_route_name().")
+			logger.error("The main route has not been set. Please use router.set_main_route_name().")
 			return
 	var valid_class_name = ["ISystem", "IModel", "IUtility"]
 	for key in _container:
