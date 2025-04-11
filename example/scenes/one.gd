@@ -48,7 +48,7 @@ func _exit_tree() -> void:
 # 视图层触发命令
 func _on_kill_button_pressed() -> void:
 	GameManager.app.audio.play_sfx(kill_audio)
-	GameManager.app.audio.set_sfx_volume(0.1)
+	GameManager.app.audio.set_sfx_volume(50)
 	GameManager.app.send_command(MobKillCommand.new())
 
 func _on_jump_button_pressed() -> void:

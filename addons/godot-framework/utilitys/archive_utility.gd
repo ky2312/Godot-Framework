@@ -1,3 +1,4 @@
+## 存档工具
 class_name ArchiveUtility extends FrameworkIUtility
 
 func on_init():
@@ -6,11 +7,8 @@ func on_init():
 func load(path: String):
 	return _load(path)
 
-func load_encrypted(path: String, key: PackedByteArray):
-	return _load(path, key)
-
-func load_encrypted_pass(path: String, password: String):
-	return _load(path, [], password)
+func load_encrypted(path: String, secret_key: String):
+	return _load(path, [], secret_key)
 	
 func _load(path: String, key: PackedByteArray = [], password: String = "") -> Error:
 	var models = self.app.get_models()
@@ -39,11 +37,8 @@ func _load(path: String, key: PackedByteArray = [], password: String = "") -> Er
 func save(path: String):
 	return _save(path)
 
-func save_encrypted(path: String, key: PackedByteArray):
-	return _save(path, key)
-
-func save_encrypted_pass(path: String, password: String):
-	return _save(path, [], password)
+func save_encrypted(path: String, secret_key: String):
+	return _save(path, [], secret_key)
 	
 func _save(path: String, key: PackedByteArray = [], password: String = "") -> Error:
 	var models = self.app.get_models()

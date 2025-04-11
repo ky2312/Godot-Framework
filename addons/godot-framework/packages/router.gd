@@ -1,51 +1,46 @@
 ## 路由器
 extends RefCounted
 
-var history: Array[Dictionary]
+var history: Array[Route]
 
 var _node: Node
 
-var _main_route_name: String
-var main_route_name: String:
-	get():
-		return _main_route_name
-
 var current_route:
 	get():
+		if _current_route_index < 0:
+			return null
 		return history[_current_route_index]
 
 var _current_route_index: int = -1
 
-var _m: Dictionary[String, Dictionary]
+var _m: Dictionary[String, Route]
 
 func _init(node: Node) -> void:
 	_node = node
 
-## 设置主路由(主场景)
-## 默认为第一个注册的路由名称
-func set_main_route_name(name: String = ""):
-	if !name:
-		for k in _m:
-			name = k
-			break
-	_main_route_name = name
-	push(name, true, false)
-	
 func register(name: String, path: String):
 	if _m.has(name):
 		push_warning("There are conflicting route names.")
 		return
-	var route = _m.get_or_add(name, {
-		"name": "",
-		"path": "",
-	})
+	var route = _m.get_or_add(name, Route.new()) as Route
 	route.name = name
 	route.path = path
 	_m.set(name, route)
 
+func get_registered_size() -> int:
+	return len(_m)
+
+class Route:
+	var name := ""
+	var path := ""
+	
+	func _to_string() -> String:
+		return "name: {0}, path: {1}".format([name, path])
+
 func go(step: int) -> Error:
 	if step == 0:
-		return FAILED
+		_node.get_tree().reload_current_scene()
+		return OK
 	if _current_route_index + step >= len(history):
 		push_warning("There is no valid route.")
 		return FAILED

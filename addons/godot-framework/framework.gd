@@ -1,6 +1,7 @@
 ## 框架主体类
 class_name Framework extends Node
 
+const constant = preload("res://addons/godot-framework/constant.gd")
 const ISystem = preload("res://addons/godot-framework/packages/interfaces/i_system.gd")
 const IModel = preload("res://addons/godot-framework/packages/interfaces/i_model.gd")
 const ICommand = preload("res://addons/godot-framework/packages/interfaces/i_command.gd")
@@ -18,22 +19,19 @@ var node: Node
 
 var _container: Dictionary
 
-## 场景被重置
-const EVENT_NAME_RELOADED_SCENE = "RELOADED_SCENE"
 var eventbus: Event = Event.new()
 
 var logger: Logger = Logger.new()
 
-## 路由模块需要调用enable_router才有效
 var router: Router
-var enabled_router := false
 
-## 音频管理器模块需要调用enable_audio才有效
 var audio: Audio
-var enabled_audio := false
 
-func _init() -> void:
-	pass
+func _init(node: Node) -> void:
+	self.node = node
+	
+	router = Router.new(self.node)
+	audio = Audio.new(self.node)
 
 ## 注册系统层实例
 func register_system(system_class: Object) -> ISystem:
@@ -97,19 +95,6 @@ func send_command(command: ICommand):
 	command.app = self
 	command.on_execute()
 
-## 开启路由器
-func enable_router():
-	enabled_router = true
-
-## 开启音频管理器
-func enable_audio():
-	enabled_audio = true
-
-func reload_scene():
-	node.get_tree().reload_current_scene()
-	logger.info("reloaded scene")
-	eventbus.trigger(EVENT_NAME_RELOADED_SCENE, null)
-
 func get_models() -> Array[IModel]:
 	var models: Array[IModel]
 	var container = _container
@@ -121,26 +106,20 @@ func get_models() -> Array[IModel]:
 
 ## 开始运行框架
 ## 会检测配置是否正确
-func run(node: Node):
+func run() -> Error:
 	if inited:
-		return
+		return OK
 	
-	if enabled_router:
-		router = Router.new(node)
-	if enabled_audio:
-		audio = Audio.new(node)
+	_check_run()
+	_register_container()
+	_init_container()
 	
-	# 加载默认模块
-	register_utility(ArchiveUtility)
-	
-	var valid_class_name = ["ISystem", "IModel", "IUtility"]
-	for key in _container:
-		if valid_class_name.has(_container[key].get_meta("class_name")):
-			_container[key].app = self
-			_container[key].on_init()
-	
-	self.node = node
 	inited = true
+	return OK
+
+## 结束
+func quit():
+	self.node.get_tree().quit()
 
 func _is_valid_class(cls_name: String, cls: Object):
 	if not "new" in cls:
@@ -150,3 +129,19 @@ func _is_valid_class(cls_name: String, cls: Object):
 	if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
 		return
 	return ins
+
+func _check_run():
+	if router:
+		if not router.get_registered_size() > 0:
+			logger.error("At least one route must be registered.")
+			return ERR_UNAVAILABLE
+
+func _register_container():
+	register_utility(ArchiveUtility)
+
+func _init_container():
+	var valid_class_name = ["ISystem", "IModel", "IUtility"]
+	for key in _container:
+		if valid_class_name.has(_container[key].get_meta("class_name")):
+			_container[key].app = self
+			_container[key].on_init()

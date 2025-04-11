@@ -3,12 +3,12 @@ extends RefCounted
 
 enum BUS {
 	MASTER_BUS,
-	BACKGROUND_MUSIC_BUS,
+	MUSIC_BUS,
 	SFX_BUS,
 }
 
 var _node: Node
-var _background_music_audio_player_count := 2
+var _music_audio_player_count := 2
 var _sfx_audio_player_count := 5
 var _max_sfx_audio_player_count := 10
 var _bmusic_audio_players: Array[AudioStreamPlayer]
@@ -18,18 +18,18 @@ var _sfx_audio_players: Array[AudioStreamPlayer]
 
 func _init(window: Node) -> void:
 	_node = window
-	AudioServer.add_bus(BUS.BACKGROUND_MUSIC_BUS)
-	AudioServer.set_bus_name(BUS.BACKGROUND_MUSIC_BUS, "Music")
+	AudioServer.add_bus(BUS.MUSIC_BUS)
+	AudioServer.set_bus_name(BUS.MUSIC_BUS, "Music")
 	AudioServer.add_bus(BUS.SFX_BUS)
 	AudioServer.set_bus_name(BUS.SFX_BUS, "Sfx")
-	_init_background_music_audio()
+	_init_music_audio()
 	_init_sfx_audio()
 
-func _init_background_music_audio():
-	for i in _background_music_audio_player_count:
+func _init_music_audio():
+	for i in _music_audio_player_count:
 		var audio_player = AudioStreamPlayer.new()
 		audio_player.process_mode = Node.PROCESS_MODE_ALWAYS
-		audio_player.bus = AudioServer.get_bus_name(BUS.BACKGROUND_MUSIC_BUS)
+		audio_player.bus = AudioServer.get_bus_name(BUS.MUSIC_BUS)
 		_node.add_child(audio_player)
 		_bmusic_audio_players.push_back(audio_player)
 
@@ -40,8 +40,8 @@ func _init_sfx_audio():
 		_node.add_child(audio_player)
 		_sfx_audio_players.push_back(audio_player)
 
-## 播放背景音乐
-func play_background_music(stream: AudioStream, fade_in_duration: float = 0.5, fade_out_duration: float = 0.5):
+## 播放音乐
+func play_music(stream: AudioStream, fade_in_duration: float = 0.5, fade_out_duration: float = 0.5):
 	var _audio_players = _bmusic_audio_players
 	if _audio_players[_current_bmusic_audio_index].stream == stream:
 		return
@@ -75,11 +75,11 @@ func set_volume(volume: float):
 	var v = volume / 100.0
 	AudioServer.set_bus_volume_linear(BUS.MASTER_BUS, v)
 
-## 设置背景音量
+## 设置音乐音量
 ## 单位百分制
-func set_background_volume(volume: float):
+func set_music_volume(volume: float):
 	var v = volume / 100.0
-	AudioServer.set_bus_volume_linear(BUS.BACKGROUND_MUSIC_BUS, v)
+	AudioServer.set_bus_volume_linear(BUS.MUSIC_BUS, v)
 
 ## 设置音效音量
 ## 单位百分制
