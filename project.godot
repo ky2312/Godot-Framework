@@ -20,4 +20,4 @@ GameManager="*res://example/game_manager.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-framework/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-framework/plugin.cfg", "res://addons/script-ide/plugin.cfg")
