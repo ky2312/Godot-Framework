@@ -1,5 +1,5 @@
-## 事件管理类
-extends RefCounted
+## 事件管理
+class_name EventUtility extends FrameworkIUtility
 	
 var _m: Dictionary[String, Array]
 
