@@ -1,6 +1,7 @@
 class_name AchievementSystem extends FrameworkISystem
 
 var model: PlayerModel
+
 func on_init():
 	model = self.app.get_model(PlayerModel) as PlayerModel
 	model.kill_count.register(
@@ -16,6 +17,8 @@ func on_init():
 			if s:
 				s += ("击杀小怪%s只" % kill_count)
 				self.app.eventbus.trigger("achievement_killed_count", s)
-				self.app.send_command(SaveAchievementKillCountCommand.new(kill_count))
 				self.app.logger.debug(s)
+
+				model.achievement_kill_count.value = kill_count
+				self.app.logger.debug("已保存成就击杀数 {0}".format([kill_count]))
 	)
