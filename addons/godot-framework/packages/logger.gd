@@ -1,5 +1,5 @@
 ## 日志
-class_name LoggerUtility extends FrameworkIUtility
+class_name FrameworkLogger
 
 ## 日志等级
 enum LEVEL {
@@ -17,7 +17,7 @@ var renderers: Array[Renderer] = [ConsoleRenderer.new()]
 
 var _root_logger: SubLogger
 
-func on_init() -> void:
+func _init() -> void:
 	_root_logger = SubLogger.new(self, "Logger")
 
 func error(content):
@@ -45,11 +45,11 @@ func create_logger(theme: String) -> SubLogger:
 	return SubLogger.new(self, theme)
 
 class SubLogger:
-	var _parent: LoggerUtility
+	var _parent: FrameworkLogger
 	
 	var theme: String
 
-	func _init(parent: LoggerUtility, theme: String = "Logger") -> void:
+	func _init(parent: FrameworkLogger, theme: String = "Logger") -> void:
 		self.theme = theme
 		self._parent = parent
 

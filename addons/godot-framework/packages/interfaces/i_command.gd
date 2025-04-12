@@ -8,5 +8,5 @@ var app: Framework
 
 ## 命令被调用时执行
 ## 子类应该实现
-func on_call():
+func on_call(data) -> void:
 	pass

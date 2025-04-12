@@ -26,12 +26,12 @@ func set_value(value):
 
 func register(callback: Callable):
 	_observer.register(callback)
-	return Framework.UnRegisterExtension.new(_observer.event, _observer.event_name, callback)
+	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback)
 
 func register_with_init_value(callback: Callable):
 	callback.callv([value])
 	register(callback)
-	return Framework.UnRegisterExtension.new(_observer.event, _observer.event_name, callback)
+	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback)
 
 static func register_with_init_value_wait_unregister(node: Node, bindablePropertys: Array[FrameworkBindableProperty], callback: Callable):
 	var values := []
@@ -45,13 +45,13 @@ static func register_with_init_value_wait_unregister(node: Node, bindablePropert
 		).unregister_when_node_exit_tree(node)
 
 func unregister(callback: Callable):
-	Framework.UnRegisterExtension.new(_observer.event, _observer.event_name, callback).unregister()
+	FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback).unregister()
 
 ## 观察属性的观察者
 class Observer:
 	var event:
 		get(): return _event
-	var _event := EventUtility.new()
+	var _event := FrameworkEvent.new()
 	
 	var _event_name := "value_change"
 	var event_name:

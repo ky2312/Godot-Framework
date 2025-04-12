@@ -1,12 +1,12 @@
 ## 事件管理
-class_name EventUtility extends FrameworkIUtility
+class_name FrameworkEvent
 	
 var _m: Dictionary[String, Array]
 
 func register(key: String, callback: Callable):
 	var arr = _m.get_or_add(key, []) as Array
 	arr.push_back(callback)
-	return Framework.UnRegisterExtension.new(self, key, callback)
+	return FrameworkUnRegisterExtension.new(self, key, callback)
 
 func unregister(key: String, callback: Callable):
 	if not _m.has(key):

@@ -1,5 +1,5 @@
 ## 音频管理器
-class_name AudioUtility extends FrameworkIUtility
+class_name FrameworkAudio
 
 enum BUS {
 	MASTER_BUS,
@@ -15,7 +15,10 @@ var _current_bmusic_audio_index := 0
 var _empty_bmusic_audio_index := 1
 var _sfx_audio_players: Array[AudioStreamPlayer]
 
-func on_init():
+var app: Framework
+
+func _init(app: Framework):
+	self.app = app
 	AudioServer.add_bus(BUS.MUSIC_BUS)
 	AudioServer.set_bus_name(BUS.MUSIC_BUS, "Music")
 	AudioServer.add_bus(BUS.SFX_BUS)

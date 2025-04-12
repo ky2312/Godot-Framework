@@ -8,3 +8,6 @@ func _on_save_button_pressed() -> void:
 
 func _on_load_data_button_pressed() -> void:
 	GameManager.app.game_archive.load()
+
+func _on_quit_button_pressed() -> void:
+	GameManager.app.quit()

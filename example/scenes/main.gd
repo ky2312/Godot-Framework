@@ -7,4 +7,4 @@ func _ready() -> void:
 
 func _on_button_pressed() -> void:
 	#GameManager.app.router.push("one")
-	GameManager.app.router.push("one", true, RouterUtility.LoadRouterJump.new())
+	GameManager.app.router.push("one", true, FrameworkRouter.LoadRouterJump.new())

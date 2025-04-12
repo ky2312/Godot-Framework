@@ -8,5 +8,5 @@ var app: Framework
 
 ## 初始化时执行
 ## 子类应该实现
-func on_init():
+func on_init() -> void:
 	pass

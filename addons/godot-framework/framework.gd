@@ -1,13 +1,7 @@
 ## 框架主体类
 class_name Framework extends Node
 
-const ISystem = preload("res://addons/godot-framework/packages/interfaces/i_system.gd")
-const IModel = preload("res://addons/godot-framework/packages/interfaces/i_model.gd")
-const ICommand = preload("res://addons/godot-framework/packages/interfaces/i_command.gd")
-const IUtility = preload("res://addons/godot-framework/packages/interfaces/i_utility.gd")
 const constant = preload("res://addons/godot-framework/packages/constant.gd")
-const BindableProperty = preload("res://addons/godot-framework/packages/bindable_property.gd")
-const UnRegisterExtension = preload("res://addons/godot-framework/packages/unregister_extension.gd")
 
 var inited: bool = false
 
@@ -15,37 +9,34 @@ var node: Node
 
 var _container: Dictionary
 
-var eventbus: EventUtility
+var eventbus: FrameworkEvent
 
-var logger: LoggerUtility
+var logger: FrameworkLogger
 
-var router: RouterUtility
+var router: FrameworkRouter
 
-var audio: AudioUtility
+var audio: FrameworkAudio
 
 var game_archive: GameArchiveUtility
 	
 func _init() -> void:
+	_init_when_init_lifecycle()
 	_register_default_containers()
 
+func _init_when_init_lifecycle():
+	self.eventbus = FrameworkEvent.new()
+	self.logger = FrameworkLogger.new()
+	self.router = FrameworkRouter.new(self)
+
+func _init_when_ready_lifecycle():
+	self.audio = FrameworkAudio.new(self)
+
 func _register_default_containers():
-	register_utility(LoggerUtility)
-	self.logger = get_utility(LoggerUtility) as LoggerUtility
-	
-	register_utility(EventUtility)
-	self.eventbus = get_utility(EventUtility) as EventUtility
-	
 	register_utility(GameArchiveUtility)
 	self.game_archive = get_utility(GameArchiveUtility) as GameArchiveUtility
 	
-	register_utility(AudioUtility)
-	self.audio = get_utility(AudioUtility) as AudioUtility
-
-	register_utility(RouterUtility)
-	self.router = get_utility(RouterUtility) as RouterUtility
-	
 ## 注册系统层实例
-func register_system(cls: Object) -> ISystem:
+func register_system(cls: Object) -> FrameworkISystem:
 	if _container.has(cls):
 		push_error("Cannot register a system class with the same name.")
 		return
@@ -57,14 +48,14 @@ func register_system(cls: Object) -> ISystem:
 	return ins
 
 ## 获取系统层实例
-func get_system(cls: Object) -> ISystem:
+func get_system(cls: Object) -> FrameworkISystem:
 	if not _container.has(cls):
 		push_error("Cannot get a system class with the name.")
 		return
 	return _container.get(cls)
 
 ## 注册模型层实例
-func register_model(cls: Object) -> IModel:
+func register_model(cls: Object) -> FrameworkIModel:
 	if _container.has(cls):
 		push_error("Cannot register a model class with the same name.")
 		return
@@ -76,14 +67,14 @@ func register_model(cls: Object) -> IModel:
 	return ins
 
 ## 获取模型层实例
-func get_model(cls: Object) -> IModel:
+func get_model(cls: Object) -> FrameworkIModel:
 	if not _container.has(cls):
 		push_error("Cannot get a model class with the name.")
 		return
 	return _container.get(cls)
 
 ## 注册工具层实例
-func register_utility(cls: Object) -> IUtility:
+func register_utility(cls: Object) -> FrameworkIUtility:
 	if _container.has(cls):
 		push_error("Cannot register a utility class with the same name.")
 		return
@@ -95,16 +86,16 @@ func register_utility(cls: Object) -> IUtility:
 	return ins
 
 ## 获取工具层实例
-func get_utility(cls: Object) -> IUtility:
+func get_utility(cls: Object) -> FrameworkIUtility:
 	if not _container.has(cls):
 		push_error("Cannot get a utility class with the name.")
 		return
 	return _container.get(cls)
 
 ## 发送命令
-func send_command(command: ICommand):
+func send_command(command: FrameworkICommand, data = null):
 	command.app = self
-	command.on_call()
+	command.on_call.call(data)
 
 ## 开始运行框架
 ## 会检测配置是否正确
@@ -114,6 +105,7 @@ func run(node: Node) -> Error:
 	
 	self.node = node
 
+	_init_when_ready_lifecycle()
 	_check_run()
 	_init_containers()
 	
@@ -122,6 +114,7 @@ func run(node: Node) -> Error:
 
 ## 结束
 func quit():
+	self.logger.info("Quit game.")
 	self.node.get_tree().quit()
 
 static func is_valid_class(cls_id: String, cls: Object) -> bool:

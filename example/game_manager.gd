@@ -16,8 +16,8 @@ func _init() -> void:
 	app.router.register("one", "res://example/scenes/one.tscn")
 	app.router.register("two", "res://example/scenes/two.tscn")
 	
-	app.logger.set_level(LoggerUtility.LEVEL.DEBUG)
-	app.logger.add_renderer(LoggerUtility.FileRenderer.new())
+	app.logger.set_level(FrameworkLogger.LEVEL.DEBUG)
+	app.logger.add_renderer(FrameworkLogger.FileRenderer.new())
 
 func _ready() -> void:
 	var err = app.run(self)

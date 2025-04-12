@@ -1,13 +1,13 @@
 ## 卸载扩展
-extends RefCounted
+class_name FrameworkUnRegisterExtension extends RefCounted
 
 var _callback: Callable
 
-var _event: EventUtility
+var _event: FrameworkEvent
 
 var _event_name: String
 
-func _init(event: EventUtility, event_name: String, callback: Callable) -> void:
+func _init(event: FrameworkEvent, event_name: String, callback: Callable) -> void:
 	_callback = callback
 	_event = event
 	_event_name = event_name

@@ -2,10 +2,10 @@ extends CanvasLayer
 
 @onready var progress_bar: ProgressBar = %ProgressBar
 
-var _load_router_control: RouterUtility.LoadRouterControl
+var _load_router_control: FrameworkRouter.LoadRouterControl
 
 func _ready() -> void:
-	_load_router_control = RouterUtility.LoadRouterControl.new()
+	_load_router_control = FrameworkRouter.LoadRouterControl.new()
 	_load_router_control.bind_update_func(
 		func (p):
 			progress_bar.value = p

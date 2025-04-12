@@ -1,5 +1,5 @@
 ## 路由器
-class_name RouterUtility extends FrameworkIUtility
+class_name FrameworkRouter
 
 var history: Array[Route]
 
@@ -13,6 +13,11 @@ var _current_route_index: int = -1
 var need_loading_route: Route
 
 var _m: Dictionary[String, Route]
+
+var app: Framework
+
+func _init(app: Framework) -> void:
+	self.app = app
 
 func register(name: String, path: String):
 	if _m.has(name):
@@ -77,7 +82,7 @@ func change_scene(path_or_packed) -> Error:
 
 ## 路由器跳转
 class RouterJump:
-	var router: RouterUtility
+	var router: FrameworkRouter
 	
 	func jump(route: Route):
 		pass
