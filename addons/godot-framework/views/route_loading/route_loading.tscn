@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://bono1ssltc8nt"]
+
+[ext_resource type="Script" uid="uid://5erx6ra8h6vh" path="res://addons/godot-framework/views/route_loading/route_loading.gd" id="1_3filx"]
+
+[node name="RouteLoading" type="CanvasLayer"]
+script = ExtResource("1_3filx")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.9
+anchor_right = 0.9
+anchor_bottom = 0.9
+offset_top = -27.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Loading: "
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3

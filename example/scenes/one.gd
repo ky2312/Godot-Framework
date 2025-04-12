@@ -52,4 +52,5 @@ func _on_kill_button_pressed() -> void:
 	GameManager.app.send_command(MobKillCommand.new())
 
 func _on_jump_button_pressed() -> void:
-	GameManager.app.router.push("two")
+	#GameManager.app.router.push("two")
+	GameManager.app.router.push("two", true, RouterUtility.LoadRouterJump.new())
