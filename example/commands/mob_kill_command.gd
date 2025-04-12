@@ -1,6 +1,6 @@
 class_name MobKillCommand extends FrameworkICommand
 
-func on_execute():
+func on_call():
 	var model = self.app.get_model(PlayerModel) as PlayerModel
 	model.kill_count.value += 1
 	var model_mob = self.app.get_model(MobModel) as MobModel

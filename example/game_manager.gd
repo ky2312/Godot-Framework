@@ -10,8 +10,8 @@ func _init() -> void:
 	
 	app.game_archive.configuration("user://game/data/save.cfg", "")
 	#app.game_archive.configuration("user://game/data/save.cfg", "123")
-	app.game_archive.register_model("player", app.get_model(PlayerModel))
-	app.game_archive.register_model("mob", app.get_model(MobModel))
+	app.game_archive.register_model("player", PlayerModel)
+	app.game_archive.register_model("mob", MobModel)
 	
 	app.router.register("one", "res://example/scenes/one.tscn")
 	app.router.register("two", "res://example/scenes/two.tscn")

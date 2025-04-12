@@ -17,8 +17,8 @@ var renderers: Array[Renderer] = [ConsoleRenderer.new()]
 
 var _root_logger: SubLogger
 
-func on_init(theme: String = "Logger") -> void:
-	_root_logger = SubLogger.new(self, theme)
+func on_init() -> void:
+	_root_logger = SubLogger.new(self, "Logger")
 
 func error(content):
 	return _root_logger.error(content)
@@ -140,9 +140,14 @@ class ConsoleRenderer extends Renderer:
 
 ## 文件渲染器
 class FileRenderer extends Renderer:
+	var _dir: String
+	
+	func _init(dir: String = "user://game/logs/") -> void:
+		self._dir = dir
+		
 	func build(log: Log, formatter: Formatter) -> void:
 		var t = Time.get_datetime_dict_from_system()
-		var file_dir := "user://game/logs/"
+		var file_dir := _dir
 		var file_name := "{0}-{1}-{2}.log".format([t.year, t.month, t.day])
 		var file_path := file_dir + file_name
 		var file := FileAccess.open(file_path, FileAccess.ModeFlags.READ_WRITE)

@@ -5,14 +5,21 @@ var _path: String
 
 var _secret_key: String
 
-var _models: Dictionary[String, FrameworkIModel]
+var _models: Dictionary[String, Object]
+
+func on_init():
+	for k in _models:
+		var cls = _models.get(k)
+		if not Framework.is_valid_class(Framework.constant.I_MODEL, cls):
+			self.app.logger.warning("The registered class must be a model, class id is {0}.".format([k]))
+			return
 
 func configuration(path: String, secret_key: String) -> void:
 	self._path = path
 	self._secret_key = secret_key
 
-func register_model(name: String, model: FrameworkIModel):
-	self._models.set(name, model)
+func register_model(name: String, cls: Object):
+	self._models.set(name, cls)
 
 func save():
 	if _check() != OK:
@@ -45,10 +52,11 @@ func save():
 	self.app.logger.info("Save archive success")
 	return OK
 
-func _get_base_data(models: Dictionary[String, FrameworkIModel]) -> Dictionary:
+func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 	var base_data := {}
 	for model_key in models:
-		var model := models.get(model_key) as FrameworkIModel
+		var model_class := models.get(model_key)
+		var model := self.app.get_model(model_class)
 		var pl := model.get_property_list()
 		var section_name := model_key
 		var section := {}
@@ -84,9 +92,10 @@ func load():
 	self.app.logger.info("Load archive success")
 	return OK
 
-func _set_base_data(base_data: Dictionary, models: Dictionary[String, FrameworkIModel]):
+func _set_base_data(base_data: Dictionary, models: Dictionary[String, Object]):
 	for model_key in models:
-		var model := models.get(model_key) as FrameworkIModel
+		var model_class := models.get(model_key)
+		var model := self.app.get_model(model_class)
 		var pl := model.get_property_list()
 		var section_name := model_key
 		if !section_name:

@@ -5,7 +5,7 @@ const ISystem = preload("res://addons/godot-framework/packages/interfaces/i_syst
 const IModel = preload("res://addons/godot-framework/packages/interfaces/i_model.gd")
 const ICommand = preload("res://addons/godot-framework/packages/interfaces/i_command.gd")
 const IUtility = preload("res://addons/godot-framework/packages/interfaces/i_utility.gd")
-const constant = preload("res://addons/godot-framework/constant.gd")
+const constant = preload("res://addons/godot-framework/packages/constant.gd")
 const BindableProperty = preload("res://addons/godot-framework/packages/bindable_property.gd")
 const UnRegisterExtension = preload("res://addons/godot-framework/packages/unregister_extension.gd")
 
@@ -45,75 +45,66 @@ func _register_default_containers():
 	self.router = get_utility(RouterUtility) as RouterUtility
 	
 ## 注册系统层实例
-func register_system(system_class: Object) -> ISystem:
-	if _container.has(system_class):
+func register_system(cls: Object) -> ISystem:
+	if _container.has(cls):
 		push_error("Cannot register a system class with the same name.")
 		return
-	var ins = _is_valid_class("ISystem", system_class)
-	if not ins:
+	if not is_valid_class(constant.I_SYSTEM, cls):
 		push_error("This class is not a system class.")
 		return
-	_container.set(system_class, ins)
+	var ins = cls.new()
+	_container.set(cls, ins)
 	return ins
 
 ## 获取系统层实例
-func get_system(system_class: Object) -> ISystem:
-	if not _container.has(system_class):
+func get_system(cls: Object) -> ISystem:
+	if not _container.has(cls):
 		push_error("Cannot get a system class with the name.")
 		return
-	return _container.get(system_class)
+	return _container.get(cls)
 
 ## 注册模型层实例
-func register_model(model_class: Object) -> IModel:
-	if _container.has(model_class):
+func register_model(cls: Object) -> IModel:
+	if _container.has(cls):
 		push_error("Cannot register a model class with the same name.")
 		return
-	var ins = _is_valid_class("IModel", model_class)
-	if not ins:
+	if not is_valid_class(constant.I_MODEL, cls):
 		push_error("This class is not a model class.")
 		return
-	_container.set(model_class, ins)
+	var ins = cls.new()
+	_container.set(cls, ins)
 	return ins
 
 ## 获取模型层实例
-func get_model(model_class: Object) -> IModel:
-	if not _container.has(model_class):
+func get_model(cls: Object) -> IModel:
+	if not _container.has(cls):
 		push_error("Cannot get a model class with the name.")
 		return
-	return _container.get(model_class)
+	return _container.get(cls)
 
 ## 注册工具层实例
-func register_utility(utility_class: Object) -> IUtility:
-	if _container.has(utility_class):
+func register_utility(cls: Object) -> IUtility:
+	if _container.has(cls):
 		push_error("Cannot register a utility class with the same name.")
 		return
-	var ins = _is_valid_class("IUtility", utility_class)
-	if not ins:
+	if not is_valid_class(constant.I_UTILITY, cls):
 		push_error("This class is not a utility class.")
 		return
-	_container.set(utility_class, ins)
+	var ins = cls.new()
+	_container.set(cls, ins)
 	return ins
 
 ## 获取工具层实例
-func get_utility(utility_class: Object) -> IUtility:
-	if not _container.has(utility_class):
+func get_utility(cls: Object) -> IUtility:
+	if not _container.has(cls):
 		push_error("Cannot get a utility class with the name.")
 		return
-	return _container.get(utility_class)
+	return _container.get(cls)
 
 ## 发送命令
 func send_command(command: ICommand):
 	command.app = self
-	command.on_execute()
-
-func get_models() -> Array[IModel]:
-	var models: Array[IModel]
-	var container = _container
-	for cls in container:
-		var ins = container[cls]
-		if ins.get_meta("class_name") == "IModel":
-			models.push_back(ins)
-	return models
+	command.on_call()
 
 ## 开始运行框架
 ## 会检测配置是否正确
@@ -124,7 +115,7 @@ func run(node: Node) -> Error:
 	self.node = node
 
 	_check_run()
-	_init_container()
+	_init_containers()
 	
 	inited = true
 	return OK
@@ -133,14 +124,12 @@ func run(node: Node) -> Error:
 func quit():
 	self.node.get_tree().quit()
 
-func _is_valid_class(cls_name: String, cls: Object):
+static func is_valid_class(cls_id: String, cls: Object) -> bool:
 	if not "new" in cls:
-		return
-	# 不要在模块内使用_init(), 而是使用on_init()
-	var ins = cls.new()
-	if !(ins.has_meta("class_name") and ins.get_meta("class_name") == cls_name):
-		return
-	return ins
+		return false
+	if not cls.class_id == cls_id:
+		return false
+	return true
 
 func _check_run():
 	if router:
@@ -148,9 +137,9 @@ func _check_run():
 			push_error("At least one route must be registered.")
 			return FAILED
 
-func _init_container():
-	var valid_class_name = ["ISystem", "IModel", "IUtility"]
+func _init_containers():
+	var valid_class_id = [constant.I_SYSTEM, constant.I_MODEL, constant.I_UTILITY]
 	for key in _container:
-		if valid_class_name.has(_container[key].get_meta("class_name")):
+		if valid_class_id.has(_container[key].class_id):
 			_container[key].app = self
 			_container[key].on_init()

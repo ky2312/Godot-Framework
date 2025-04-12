@@ -1,7 +1,7 @@
 ## 重新加载路由命令
 class_name ReloadRouteCommand extends FrameworkICommand
 
-func on_execute():
+func on_call():
 	self.app.router.go(0)
 	self.app.logger.info("reloaded route")
 	
