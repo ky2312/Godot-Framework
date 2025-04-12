@@ -156,11 +156,13 @@ class FileRenderer extends Renderer:
 		else:
 			var err = DirAccess.make_dir_recursive_absolute(file_dir)
 			if err:
-				push_error("Cannot create directory: {0}.".format([err]))
+				file.close()
+				push_error(err)
 				return
+			file.close()
 			file = FileAccess.open(file_path, FileAccess.ModeFlags.WRITE)
 		if !file:
-			push_error("Cannot open file: {0}.".format([FileAccess.get_open_error()]))
+			push_error(FileAccess.get_open_error())
 			return
 		var str = formatter.format(log)
 		file.store_string(str)

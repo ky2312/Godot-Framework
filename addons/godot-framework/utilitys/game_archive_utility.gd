@@ -1,4 +1,4 @@
-## 存档
+## 归档
 class_name GameArchiveUtility extends FrameworkIUtility
 
 var _path: String
@@ -6,6 +6,8 @@ var _path: String
 var _secret_key: String
 
 var _models: Dictionary[String, Object]
+
+var _archive: Archive = CfgArchive.new()
 
 func on_init():
 	for k in _models:
@@ -25,32 +27,8 @@ func save():
 	if _check() != OK:
 		return
 	var base_data := _get_base_data(_models)
-	var _parsed_path = _parse_path(_path)
-	var dir = _parsed_path[0]
-	var file_name = _parsed_path[1]
-	if !file_name:
-		self.app.logger.error("Save archive path error.")
-		return FAILED
-	
-	var config = ConfigFile.new()
-	for section in base_data:
-		for k in base_data[section]:
-			config.set_value(section, k, base_data[section][k])
-			
-	var err = DirAccess.make_dir_recursive_absolute(dir)
-	if err:
-		self.app.logger.error("Cannot create directory: {0}.".format([err]))
-		return FAILED
-	
-	if _secret_key:
-		err = config.save_encrypted_pass(_path, _secret_key)
-	else:
-		err = config.save(_path)
-	if err:
-		self.app.logger.error("Save failed.")
-		return err
-	self.app.logger.info("Save archive success")
-	return OK
+	_archive.datas = [base_data]
+	_archive.save(_path, _secret_key)
 
 func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 	var base_data := {}
@@ -72,25 +50,8 @@ func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 func load():
 	if _check() != OK:
 		return
-	var base_data := {}
-	var config = ConfigFile.new()
-	var err: Error
-	if _secret_key:
-		err = config.load_encrypted_pass(_path, _secret_key)
-	else:
-		err = config.load(_path)
-	if err:
-		self.app.logger.error("Load failed.")
-		return err
-	for section in config.get_sections():
-		var data := {}
-		for k in config.get_section_keys(section):
-			data.set(k, config.get_value(section, k))
-		base_data.set(section, data)
-		
-	_set_base_data(base_data, _models)
-	self.app.logger.info("Load archive success")
-	return OK
+	_archive.load(_path, _secret_key)
+	_set_base_data(_archive.datas[0], _models)
 
 func _set_base_data(base_data: Dictionary, models: Dictionary[String, Object]):
 	for model_key in models:
