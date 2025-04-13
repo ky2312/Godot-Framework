@@ -12,37 +12,45 @@ func _init(value) -> void:
 ## 使用的属性值
 var value:
 	get():
-		return get_value()
+		return _value
 	
 	set(value):
-		set_value(value)
+		_value = value
 		_observer.trigger(value)
 
-func get_value():
-	return _value
-
-func set_value(value):
-	_value = value
-
-func register(callback: Callable):
-	_observer.register(callback)
-	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback)
-
-func register_with_init_value(callback: Callable):
-	callback.callv([value])
-	register(callback)
-	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback)
-
-static func register_with_init_value_wait_unregister(node: Node, bindablePropertys: Array[FrameworkBindableProperty], callback: Callable):
-	var values := []
+static func register_propertys(bindablePropertys: Array[FrameworkBindableProperty], callback: Callable) -> FrameworkUnRegisterExtension:
+	var unregisters: Array[FrameworkUnRegisterExtension] = []
+	var values: Array = []
 	for i in range(len(bindablePropertys)):
 		var b = bindablePropertys[i]
 		values.push_back(b.value)
-		b.register_with_init_value(
+		var unregister = b.register(
 			func(v):
 				values[i] = v
 				callback.callv(values)
-		).unregister_when_node_exit_tree(node)
+		)
+		unregisters.push_back(unregister)
+
+	var _observer := Observer.new()
+	var _callback = func():
+		for unregister in unregisters:
+			unregister.unregister()
+	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, _callback)
+
+static func register_propertys_with_init_value(bindablePropertys: Array[FrameworkBindableProperty], callback: Callable):
+	var values = []
+	for b in bindablePropertys:
+		values.push_back(b.value)
+	callback.callv(values)
+	return FrameworkBindableProperty.register_propertys(bindablePropertys, callback)
+
+func register(callback: Callable) -> FrameworkUnRegisterExtension:
+	_observer.register(callback)
+	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback)
+
+func register_with_init_value(callback: Callable) -> FrameworkUnRegisterExtension:
+	callback.callv([value])
+	return register(callback)
 
 func unregister(callback: Callable):
 	FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback).unregister()

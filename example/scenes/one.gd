@@ -14,14 +14,13 @@ func _ready() -> void:
 	var model_mob = GameManager.app.get_model(MobModel) as MobModel
 	# 两种使用方式
 	# 便捷使用多个值
-	FrameworkBindableProperty.register_with_init_value_wait_unregister(
-		self,
+	FrameworkBindableProperty.register_propertys_with_init_value(
 		[model_player.kill_count, model_player.achievement_kill_count, model_mob.count],
 		func(kill_count, achievement_kill_count, count):
 			kill_label.text = "已击杀 {0} 次，".format([kill_count])
 			mob_label.text = "上次存档点已击杀 {0} 次。".format([achievement_kill_count])
 			kill_button.text = "点击击杀1只小怪，剩余 {0} 只".format([count])
-	)
+	).unregister_when_node_exit_tree(self)
 	# 通常使用单个值
 	#model_player.kill_count.register_with_init_value(
 		#func(kill_count):

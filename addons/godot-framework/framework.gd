@@ -95,7 +95,7 @@ func get_utility(cls: Object) -> FrameworkIUtility:
 ## 发送命令
 func send_command(command: FrameworkICommand, data = null):
 	command.app = self
-	command.on_call.call(data)
+	command.on_execute.call(data)
 
 ## 开始运行框架
 ## 会检测配置是否正确
