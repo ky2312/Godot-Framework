@@ -31,6 +31,3 @@ class Context:
 
 	func get_framework_node() -> Node:
 		return _get_framework_node_func.call()
-	
-	func get_utility(cls: Object) -> FrameworkIUtility:
-		return _ioc.get_utility(cls)

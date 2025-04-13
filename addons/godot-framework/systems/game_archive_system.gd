@@ -59,7 +59,7 @@ func _set_base_data(base_data: Dictionary, models: Dictionary[String, Object]):
 			break
 		if !base_data.has(section_name):
 			break
-		var section = base_data.get(section_name)
+		var section := base_data.get(section_name)
 		for key in section:
 			if model[key] is FrameworkBindableProperty:
 				model[key].value = section[key]

@@ -21,7 +21,8 @@ var value:
 static func register_propertys(bindablePropertys: Array[FrameworkBindableProperty], callback: Callable) -> FrameworkUnRegisterExtension:
 	var unregisters: Array[FrameworkUnRegisterExtension] = []
 	var values: Array = []
-	for i in range(len(bindablePropertys)):
+	var len = len(bindablePropertys)
+	for i in range(len):
 		var b = bindablePropertys[i]
 		values.push_back(b.value)
 		var unregister = b.register(
@@ -31,11 +32,12 @@ static func register_propertys(bindablePropertys: Array[FrameworkBindablePropert
 		)
 		unregisters.push_back(unregister)
 
-	var _observer := Observer.new()
-	var _callback = func():
+	var _event := FrameworkEvent.new()
+	var unregister_callback = func(_v):
 		for unregister in unregisters:
 			unregister.unregister()
-	return FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, _callback)
+	_event.register(Framework.constant.EVENT_UNREGISTERED, unregister_callback)
+	return FrameworkUnRegisterExtension.new(_event, "_", func():)
 
 static func register_propertys_with_init_value(bindablePropertys: Array[FrameworkBindableProperty], callback: Callable):
 	var values = []
