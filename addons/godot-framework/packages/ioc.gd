@@ -1,7 +1,5 @@
 class_name IoC
 
-const constant = preload("res://addons/godot-framework/packages/constant.gd")
-
 var _containers: Dictionary
 
 var _eventbus: FrameworkEvent
@@ -26,11 +24,11 @@ func init():
 	for cls in _containers:
 		var c = _containers.get(cls)
 		match cls.class_id:
-			constant.I_MODEL:
+			Framework.constant.I_MODEL:
 				c.on_init()
-			constant.I_SYSTEM:
+			Framework.constant.I_SYSTEM:
 				c.on_init()
-			constant.I_UTILITY:
+			Framework.constant.I_UTILITY:
 				c.on_init()
 
 ## 注册系统层实例
@@ -38,7 +36,7 @@ func register_system(cls: Object) -> FrameworkISystem:
 	if _containers.has(cls):
 		push_error("Cannot register a system class with the same name.")
 		return
-	if not is_valid_class(constant.I_SYSTEM, cls):
+	if not is_valid_class(Framework.constant.I_SYSTEM, cls):
 		push_error("This class is not a system class.")
 		return
 	var ins = cls.new()
@@ -59,7 +57,7 @@ func register_model(cls: Object) -> FrameworkIModel:
 	if _containers.has(cls):
 		push_error("Cannot register a model class with the same name.")
 		return
-	if not is_valid_class(constant.I_MODEL, cls):
+	if not is_valid_class(Framework.constant.I_MODEL, cls):
 		push_error("This class is not a model class.")
 		return
 	var event: FrameworkEvent.TriggerableEvent = _eventbus.get_triggerable_event()
@@ -81,7 +79,7 @@ func register_utility(cls: Object) -> FrameworkIUtility:
 	if _containers.has(cls):
 		push_error("Cannot register a utility class with the same name.")
 		return
-	if not is_valid_class(constant.I_UTILITY, cls):
+	if not is_valid_class(Framework.constant.I_UTILITY, cls):
 		push_error("This class is not a utility class.")
 		return
 	var ins = cls.new()

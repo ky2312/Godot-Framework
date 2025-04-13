@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://cqdqtdqmu101u"]
 
-[ext_resource type="Script" uid="uid://drkgecj2i0b6m" path="res://example/views/one.gd" id="1_amse2"]
+[ext_resource type="Script" uid="uid://drkgecj2i0b6m" path="res://example/views/mob/one.gd" id="1_amse2"]
 [ext_resource type="AudioStream" uid="uid://bccb6i611a1at" path="res://example/assets/sounds/tap.wav" id="2_ofvc7"]
-[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/views/hud.tscn" id="3_1mo1c"]
+[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/views/hud/hud.tscn" id="3_1mo1c"]
 
 [node name="One" type="Node2D"]
 script = ExtResource("1_amse2")

@@ -84,6 +84,7 @@ func run(node: Node) -> Error:
 
 ## 帧更新
 func update(delta: float) -> void:
+	# TODO 需要更新eventbus内容
 	pass
 
 ## 结束

@@ -1,9 +1,7 @@
 ## 工具接口
-class_name FrameworkIUtility
+class_name FrameworkIUtility extends RefCounted
 
-const constant = preload("res://addons/godot-framework/packages/constant.gd")
-
-static var class_id = constant.I_UTILITY
+static var class_id = Framework.constant.I_UTILITY
 
 var context: Context
 

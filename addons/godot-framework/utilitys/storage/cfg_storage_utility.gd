@@ -21,6 +21,11 @@ func save(path: String, secret_key: String):
   for k in base_data[section]:
    config.set_value(section, k, base_data[section][k])
  var err: Error = OK
+ err = DirAccess.make_dir_recursive_absolute(dir)
+ if err != OK:
+  self.context.logger.error(err)
+  return
+
  if secret_key:
   err = config.save_encrypted_pass(path, secret_key)
  else:

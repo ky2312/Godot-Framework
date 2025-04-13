@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dlkcut5teoelt"]
 
-[ext_resource type="Script" uid="uid://drjf3ch0p70t7" path="res://example/views/hud.gd" id="1_6nsy5"]
+[ext_resource type="Script" uid="uid://drjf3ch0p70t7" path="res://example/views/hud/hud.gd" id="1_6nsy5"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_6nsy5")
@@ -32,12 +32,17 @@ text = "保存游戏数据"
 layout_mode = 2
 text = "加载游戏数据"
 
+[node name="ToMainButton" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+text = "回到首页"
+
 [node name="QuitButton" type="Button" parent="Control/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "退出游戏"
+text = "退出"
 
 [connection signal="pressed" from="Control/VBoxContainer/ReloadButton" to="." method="_on_reload_button_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/LoadDataButton" to="." method="_on_load_data_button_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/ToMainButton" to="." method="_on_to_main_button_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

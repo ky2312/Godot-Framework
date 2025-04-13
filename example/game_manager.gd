@@ -9,13 +9,16 @@ func _init() -> void:
 	app.register_model(PlayerModel)
 	app.register_model(MobModel)
 	
-	app.game_archive.configuration("user://game/data/save.cfg", "")
-	#app.game_archive.configuration("user://game/data/save.cfg", "123")
+	#app.game_archive.configuration("user://game/data/save.cfg", "secret_key")
+	app.game_archive.configuration("res://.output/data/save.cfg", "")
 	app.game_archive.register_model("player", PlayerModel)
 	app.game_archive.register_model("mob", MobModel)
 	
-	app.router.register("one", "res://example/views/one.tscn")
-	app.router.register("two", "res://example/views/two.tscn")
+	app.router.register("main", "res://example/views/main.tscn")
+	app.router.register("mob/one", "res://example/views/mob/one.tscn")
+	app.router.register("mob/two", "res://example/views/mob/two.tscn")
+	app.router.register("platform_jump/level_1", "res://example/views/platform_jump/platform_jump_level_1.tscn")
+	app.router.register("text/main", "res://example/views/text/text.tscn")
 	
 	app.logger.set_level(FrameworkLogger.LEVEL.DEBUG)
 	app.logger.add_renderer(FrameworkLogger.FileRenderer.new())

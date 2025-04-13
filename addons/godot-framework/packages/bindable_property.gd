@@ -1,22 +1,29 @@
 ## 可绑定的属性类
-class_name FrameworkBindableProperty extends RefCounted
-
-## 实际的属性值
-var _value
-
-var _observer := Observer.new()
-
-func _init(value) -> void:
-	self.value = value
+class_name FrameworkBindableProperty
 
 ## 使用的属性值
 var value:
 	get():
-		return _value
+		return get_value()
 	
 	set(value):
-		_value = value
-		_observer.trigger(value)
+		set_value(value)
+## 实际的属性值
+var _value
+
+var observer: Observer:
+	get(): return _observer
+var _observer := Observer.new()
+
+func _init(value) -> void:
+	self._value = value
+
+func get_value():
+	return _value
+
+func set_value(value):
+	_value = value
+	_observer.trigger(value)
 
 static func register_propertys(bindablePropertys: Array[FrameworkBindableProperty], callback: Callable) -> FrameworkUnRegisterExtension:
 	var unregisters: Array[FrameworkUnRegisterExtension] = []
@@ -57,6 +64,11 @@ func register_with_init_value(callback: Callable) -> FrameworkUnRegisterExtensio
 func unregister(callback: Callable):
 	FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback).unregister()
 
+# func create_readonly_bindable_property() -> ReadonlyBindableProperty:
+# 	var rbp := ReadonlyBindableProperty.new(null)
+# 	rbp.set_bindable_property(self)
+# 	return rbp
+
 ## 观察属性的观察者
 class Observer:
 	var event:
@@ -75,3 +87,20 @@ class Observer:
 	
 	func trigger(value):
 		_event.trigger(_event_name, value)
+	
+# class ReadonlyBindableProperty extends FrameworkBindableProperty:
+# 	var _bp: FrameworkBindableProperty
+
+# 	func set_bindable_property(bp: FrameworkBindableProperty):
+# 		_bp = bp
+# 		_observer = bp.observer
+
+# 	func get_value():
+# 		return _bp._value
+
+# 	func set_value(value):
+# 		var message = "The read-only status cannot be modified."
+# 		if GameManager and GameManager.app:
+# 			GameManager.app.logger.warning(message)
+# 		else:
+# 			push_warning(message)

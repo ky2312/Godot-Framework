@@ -1,9 +1,7 @@
 ## 系统接口
 class_name FrameworkISystem
 
-const constant = preload("res://addons/godot-framework/packages/constant.gd")
-
-static var class_id = constant.I_SYSTEM
+static var class_id = Framework.constant.I_SYSTEM
 
 var context: Context
 

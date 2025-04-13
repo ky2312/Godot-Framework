@@ -1,9 +1,7 @@
 ## 命令接口
 class_name FrameworkICommand
 
-const constant = preload("res://addons/godot-framework/packages/constant.gd")
-
-static var class_id = constant.I_COMMAND
+static var class_id = Framework.constant.I_COMMAND
 
 var context: Context
 

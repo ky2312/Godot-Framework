@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwxfvllpb8wqc"]
+
+[ext_resource type="Script" uid="uid://diqhoyra03qkh" path="res://example/views/text/text.gd" id="1_7tfyi"]
+[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/views/hud/hud.tscn" id="2_edhgw"]
+
+[node name="Text" type="Node2D"]
+script = ExtResource("1_7tfyi")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "TODO"
+
+[node name="HUD" parent="." instance=ExtResource("2_edhgw")]

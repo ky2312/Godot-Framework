@@ -10,8 +10,18 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_v6ajm")
 
-[node name="Button" type="Button" parent="."]
+[node name="MobGameButton" type="Button" parent="."]
 layout_mode = 2
-text = "开始"
+text = "开始怪物游戏"
 
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[node name="PlatformJumpButton" type="Button" parent="."]
+layout_mode = 2
+text = "开始平台跳跃游戏"
+
+[node name="TextButton" type="Button" parent="."]
+layout_mode = 2
+text = "开始文本编辑"
+
+[connection signal="pressed" from="MobGameButton" to="." method="_on_mob_game_button_pressed"]
+[connection signal="pressed" from="PlatformJumpButton" to="." method="_on_platform_jump_button_pressed"]
+[connection signal="pressed" from="TextButton" to="." method="_on_text_button_pressed"]

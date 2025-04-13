@@ -1,9 +1,7 @@
 ## 模型接口
 class_name FrameworkIModel
 
-const constant = preload("res://addons/godot-framework/packages/constant.gd")
-
-static var class_id = constant.I_MODEL
+static var class_id = Framework.constant.I_MODEL
 
 var context: Context
 

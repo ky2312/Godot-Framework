@@ -29,14 +29,6 @@ func register(name: String, path: String):
 func get_registered_size() -> int:
 	return len(_m)
 
-class Route:
-	var name := ""
-	
-	var path := ""
-	
-	func _to_string() -> String:
-		return "name: {0}, path: {1}".format([name, path])
-
 func go(step: int) -> Error:
 	if step == 0:
 		self.context.get_framework_node().get_tree().reload_current_scene()
@@ -67,6 +59,10 @@ func back() -> Error:
 	_current_route_index -= 1
 	return change_scene(current_route.path)
 
+func clear() -> void:
+	_current_route_index = -1
+	history.clear()
+
 func change_scene(path_or_packed) -> Error:
 	var err: Error
 	if typeof(path_or_packed) == TYPE_STRING:
@@ -77,6 +73,14 @@ func change_scene(path_or_packed) -> Error:
 		self.context.logger.error("Unable to navigate to the route, error code {0}.".format([err]))
 		return err
 	return OK
+
+class Route:
+	var name := ""
+	
+	var path := ""
+	
+	func _to_string() -> String:
+		return "name: {0}, path: {1}".format([name, path])
 
 ## 路由器跳转
 class RouterJump:

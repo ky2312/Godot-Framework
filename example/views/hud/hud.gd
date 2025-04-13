@@ -13,3 +13,7 @@ func _on_load_data_button_pressed() -> void:
 
 func _on_quit_button_pressed() -> void:
 	GameManager.app.quit()
+
+func _on_to_main_button_pressed() -> void:
+	GameManager.app.router.clear()
+	GameManager.app.router.push("main", false)
