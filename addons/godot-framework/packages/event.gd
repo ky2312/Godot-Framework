@@ -22,10 +22,10 @@ func trigger(key: String, value):
 	for callback in _m.get(key):
 		callback.callv([value])
 
-func get_registrable_event() -> RegistrableEvent:
+func get_only_register_event() -> RegistrableEvent:
 	return RegistrableEvent.new(self)
 
-func get_triggerable_event() -> TriggerableEvent:
+func get_only_trigger_event() -> TriggerableEvent:
 	return TriggerableEvent.new(self)
 
 class RegistrableEvent:

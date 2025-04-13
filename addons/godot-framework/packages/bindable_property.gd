@@ -75,9 +75,15 @@ class Observer:
 		get(): return _event
 	var _event := FrameworkEvent.new()
 	
-	var _event_name := "value_change"
+	var _event_name := ""
 	var event_name:
 		get(): return _event_name
+
+	static var _id := 0
+
+	func _init() -> void:
+		_event_name = "value_change_${}".format([Observer._id])
+		Observer._id += 1
 
 	func register(callback: Callable):
 		_event.register(_event_name, callback)

@@ -26,7 +26,7 @@ func _init() -> void:
 
 func _init_when_init_lifecycle():
 	self._eventbus = FrameworkEvent.new()
-	self.eventbus = _eventbus.get_registrable_event()
+	self.eventbus = _eventbus.get_only_register_event()
 	self.logger = FrameworkLogger.new()
 	var get_node_func = func() -> Node:
 		return node

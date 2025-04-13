@@ -60,7 +60,7 @@ func register_model(cls: Object) -> FrameworkIModel:
 	if not is_valid_class(Framework.constant.I_MODEL, cls):
 		push_error("This class is not a model class.")
 		return
-	var event: FrameworkEvent.TriggerableEvent = _eventbus.get_triggerable_event()
+	var event: FrameworkEvent.TriggerableEvent = _eventbus.get_only_trigger_event()
 	var ins = cls.new()
 	var contexnt := FrameworkIModel.Context.new(self, event, _logger)
 	ins.set_context(contexnt)
