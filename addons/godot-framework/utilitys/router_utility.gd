@@ -1,5 +1,5 @@
 ## 路由器
-class_name FrameworkRouter
+class_name RouterUtility extends FrameworkIUtility
 
 var history: Array[Route]
 
@@ -14,14 +14,12 @@ var need_loading_route: Route
 
 var _m: Dictionary[String, Route]
 
-var app: Framework
-
-func _init(app: Framework) -> void:
-	self.app = app
+func on_init():
+	pass
 
 func register(name: String, path: String):
 	if _m.has(name):
-		self.app.logger.warning("There are conflicting route names.")
+		self.context.logger.warning("There are conflicting route names.")
 		return
 	var route = _m.get_or_add(name, Route.new()) as Route
 	route.name = name
@@ -41,17 +39,17 @@ class Route:
 
 func go(step: int) -> Error:
 	if step == 0:
-		self.app.node.get_tree().reload_current_scene()
+		self.context.get_framework_node().get_tree().reload_current_scene()
 		return OK
 	if _current_route_index + step >= len(history):
-		self.app.logger.warning("There is no valid route.")
+		self.context.logger.warning("There is no valid route.")
 		return FAILED
 	_current_route_index += step
 	return change_scene(current_route.path)
 
 func push(name: String, is_record: bool = true, router_jump: RouterJump = QuickRouterJump.new()) -> Error:
 	if not _m.has(name):
-		self.app.logger.error("The route name that does not exist.")
+		self.context.logger.error("The route name that does not exist.")
 		return FAILED
 	var route = _m.get(name)
 	if is_record:
@@ -64,7 +62,7 @@ func push(name: String, is_record: bool = true, router_jump: RouterJump = QuickR
 
 func back() -> Error:
 	if _current_route_index <= 0:
-		self.app.logger.warning("There is no valid route.")
+		self.context.logger.warning("There is no valid route.")
 		return FAILED
 	_current_route_index -= 1
 	return change_scene(current_route.path)
@@ -72,17 +70,17 @@ func back() -> Error:
 func change_scene(path_or_packed) -> Error:
 	var err: Error
 	if typeof(path_or_packed) == TYPE_STRING:
-		err = app.node.get_tree().change_scene_to_file(path_or_packed)
+		err = self.context.get_framework_node().get_tree().change_scene_to_file(path_or_packed)
 	else:
-		err = app.node.get_tree().change_scene_to_packed(path_or_packed)
+		err = self.context.get_framework_node().get_tree().change_scene_to_packed(path_or_packed)
 	if err != OK:
-		app.logger.error("Unable to navigate to the route, error code {0}.".format([err]))
+		self.context.logger.error("Unable to navigate to the route, error code {0}.".format([err]))
 		return err
 	return OK
 
 ## 路由器跳转
 class RouterJump:
-	var router: FrameworkRouter
+	var router: RouterUtility
 	
 	func jump(route: Route):
 		pass
@@ -104,37 +102,33 @@ class LoadRouterJump extends RouterJump:
 
 ## 加载模式路由器控制逻辑
 class LoadRouterControl:
-	var _progress: Array[float] = []
+	var _update_callback: Callable
 	
-	var _scene_res: Resource
+	var _finished_callback: Callable
 
-	var _update_func: Callable
+	var _router: RouterUtility
+
+	var _res_loader := FrameworkResourceLoader.new()
+
+	func _init(router: RouterUtility, update_callback: Callable, finished_callback: Callable) -> void:
+		self._router = router
+		self._update_callback = update_callback
+		self._finished_callback = finished_callback
 	
-	var _finished_func: Callable
-	
-	func bind_update_func(fuc: Callable):
-		self._update_func = fuc
-		
-	func bind_finished_func(fuc: Callable):
-		self._finished_func = fuc
-		
 	func load():
-		ResourceLoader.load_threaded_request(GameManager.app.router.need_loading_route.path)
+		_res_loader.load(_router.need_loading_route.path, _update, _finish)
 
 	func update():
-		var status = ResourceLoader.load_threaded_get_status(GameManager.app.router.need_loading_route.path, _progress)
-		match status:
-			ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-				if _update_func:
-					_update_func.callv([_progress[0] * 100])
-			ResourceLoader.THREAD_LOAD_LOADED:
-				if _update_func:
-					_update_func.callv([_progress[0] * 100])
-				_scene_res = ResourceLoader.load_threaded_get(GameManager.app.router.need_loading_route.path)
-				if _finished_func:
-					await _finished_func.call()
-				_finish()
-		
-	func _finish():
-		GameManager.app.router.change_scene(_scene_res)
-		GameManager.app.router.need_loading_route = null
+		_res_loader.update()
+	
+	func _update(p):
+		if _update_callback:
+			_update_callback.callv([p * 100])
+
+	func _finish(r):
+		if _update_callback:
+			_update_callback.callv([100.0])
+		if _finished_callback:
+			await _finished_callback.call()
+		_router.change_scene(r)
+		_router.need_loading_route = null

@@ -7,95 +7,66 @@ var inited: bool = false
 
 var node: Node
 
-var _container: Dictionary
+var _ioc: IoC
 
-var eventbus: FrameworkEvent
+var eventbus: FrameworkEvent.RegistrableEvent
+var _eventbus: FrameworkEvent
 
 var logger: FrameworkLogger
 
-var router: FrameworkRouter
+var router: RouterUtility
 
-var audio: FrameworkAudio
+var audio: AudioUtility
 
-var game_archive: GameArchiveUtility
+var game_archive: GameArchiveSystem
 	
 func _init() -> void:
 	_init_when_init_lifecycle()
 	_register_default_containers()
 
 func _init_when_init_lifecycle():
-	self.eventbus = FrameworkEvent.new()
+	self._eventbus = FrameworkEvent.new()
+	self.eventbus = _eventbus.get_registrable_event()
 	self.logger = FrameworkLogger.new()
-	self.router = FrameworkRouter.new(self)
-
-func _init_when_ready_lifecycle():
-	self.audio = FrameworkAudio.new(self)
+	var get_node_func = func() -> Node:
+		return node
+	self._ioc = IoC.new(_eventbus, logger, get_node_func)
 
 func _register_default_containers():
-	register_utility(GameArchiveUtility)
-	self.game_archive = get_utility(GameArchiveUtility) as GameArchiveUtility
+	_ioc.register_utility(CfgStorageUtility)
+	_ioc.register_utility(CsvStorageUtility)
+	_ioc.register_utility(JsonStorageUtility)
+
+	_ioc.register_utility(AudioUtility)
+	self.audio = _ioc.get_utility(AudioUtility)
+
+	_ioc.register_utility(RouterUtility)
+	self.router = _ioc.get_utility(RouterUtility)
+
+	_ioc.register_system(GameArchiveSystem)
+	self.game_archive = _ioc.get_system(GameArchiveSystem)
 	
 ## 注册系统层实例
 func register_system(cls: Object) -> FrameworkISystem:
-	if _container.has(cls):
-		push_error("Cannot register a system class with the same name.")
-		return
-	if not is_valid_class(constant.I_SYSTEM, cls):
-		push_error("This class is not a system class.")
-		return
-	var ins = cls.new()
-	_container.set(cls, ins)
-	return ins
-
-## 获取系统层实例
-func get_system(cls: Object) -> FrameworkISystem:
-	if not _container.has(cls):
-		push_error("Cannot get a system class with the name.")
-		return
-	return _container.get(cls)
+	return _ioc.register_system(cls)
 
 ## 注册模型层实例
 func register_model(cls: Object) -> FrameworkIModel:
-	if _container.has(cls):
-		push_error("Cannot register a model class with the same name.")
-		return
-	if not is_valid_class(constant.I_MODEL, cls):
-		push_error("This class is not a model class.")
-		return
-	var ins = cls.new()
-	_container.set(cls, ins)
-	return ins
+	return _ioc.register_model(cls)
 
 ## 获取模型层实例
 func get_model(cls: Object) -> FrameworkIModel:
-	if not _container.has(cls):
-		push_error("Cannot get a model class with the name.")
-		return
-	return _container.get(cls)
+	return _ioc.get_model(cls)
 
 ## 注册工具层实例
 func register_utility(cls: Object) -> FrameworkIUtility:
-	if _container.has(cls):
-		push_error("Cannot register a utility class with the same name.")
-		return
-	if not is_valid_class(constant.I_UTILITY, cls):
-		push_error("This class is not a utility class.")
-		return
-	var ins = cls.new()
-	_container.set(cls, ins)
-	return ins
-
-## 获取工具层实例
-func get_utility(cls: Object) -> FrameworkIUtility:
-	if not _container.has(cls):
-		push_error("Cannot get a utility class with the name.")
-		return
-	return _container.get(cls)
+	return _ioc.register_utility(cls)
 
 ## 发送命令
-func send_command(command: FrameworkICommand, data = null):
-	command.app = self
-	command.on_execute.call(data)
+func send_command(command: FrameworkICommand):
+	var context := FrameworkICommand.Context.new(_ioc, logger)
+	command.set_context(context)
+	command.on_execute()
 
 ## 开始运行框架
 ## 会检测配置是否正确
@@ -105,9 +76,8 @@ func run(node: Node) -> Error:
 	
 	self.node = node
 
-	_init_when_ready_lifecycle()
 	_check_run()
-	_init_containers()
+	_ioc.init()
 	
 	inited = true
 	return OK
@@ -117,22 +87,8 @@ func quit():
 	self.logger.info("Quit game.")
 	self.node.get_tree().quit()
 
-static func is_valid_class(cls_id: String, cls: Object) -> bool:
-	if not "new" in cls:
-		return false
-	if not cls.class_id == cls_id:
-		return false
-	return true
-
 func _check_run():
 	if router:
 		if not router.get_registered_size() > 0:
 			push_error("At least one route must be registered.")
 			return FAILED
-
-func _init_containers():
-	var valid_class_id = [constant.I_SYSTEM, constant.I_MODEL, constant.I_UTILITY]
-	for key in _container:
-		if valid_class_id.has(_container[key].class_id):
-			_container[key].app = self
-			_container[key].on_init()

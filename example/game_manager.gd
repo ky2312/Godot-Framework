@@ -5,6 +5,7 @@ var app: Framework
 func _init() -> void:
 	app = Framework.new()
 	app.register_system(AchievementSystem)
+	app.register_system(PlayerSystem)
 	app.register_model(PlayerModel)
 	app.register_model(MobModel)
 	
@@ -13,8 +14,8 @@ func _init() -> void:
 	app.game_archive.register_model("player", PlayerModel)
 	app.game_archive.register_model("mob", MobModel)
 	
-	app.router.register("one", "res://example/scenes/one.tscn")
-	app.router.register("two", "res://example/scenes/two.tscn")
+	app.router.register("one", "res://example/views/one.tscn")
+	app.router.register("two", "res://example/views/two.tscn")
 	
 	app.logger.set_level(FrameworkLogger.LEVEL.DEBUG)
 	app.logger.add_renderer(FrameworkLogger.FileRenderer.new())

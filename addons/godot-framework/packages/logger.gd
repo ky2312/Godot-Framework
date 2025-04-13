@@ -156,10 +156,8 @@ class FileRenderer extends Renderer:
 		else:
 			var err = DirAccess.make_dir_recursive_absolute(file_dir)
 			if err:
-				file.close()
 				push_error(err)
 				return
-			file.close()
 			file = FileAccess.open(file_path, FileAccess.ModeFlags.WRITE)
 		if !file:
 			push_error(FileAccess.get_open_error())

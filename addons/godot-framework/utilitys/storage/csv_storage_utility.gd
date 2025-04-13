@@ -1,5 +1,5 @@
 ## csv格式归档文件
-class_name CSVArchive extends Archive
+class_name CsvStorageUtility extends IStorageUtility
 
 func _init() -> void:
  pass

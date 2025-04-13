@@ -1,5 +1,4 @@
-## 归档文件
-class_name Archive
+class_name IStorageUtility extends FrameworkIUtility
 
 var datas: Array[Dictionary]
 

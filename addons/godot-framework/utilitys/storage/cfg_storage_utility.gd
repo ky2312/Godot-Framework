@@ -1,5 +1,5 @@
 ## cfg格式归档文件
-class_name CfgArchive extends Archive
+class_name CfgStorageUtility extends IStorageUtility
 
 func _init() -> void:
  datas.push_back({})

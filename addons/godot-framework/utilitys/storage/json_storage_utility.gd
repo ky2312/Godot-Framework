@@ -1,5 +1,5 @@
 ## json格式归档文件
-class_name JSONArchive extends Archive
+class_name JsonStorageUtility extends IStorageUtility
 
 func _init() -> void:
  datas.push_back({})

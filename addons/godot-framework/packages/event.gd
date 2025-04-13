@@ -21,3 +21,30 @@ func trigger(key: String, value):
 		return
 	for callback in _m.get(key):
 		callback.callv([value])
+
+func get_registrable_event() -> RegistrableEvent:
+	return RegistrableEvent.new(self)
+
+func get_triggerable_event() -> TriggerableEvent:
+	return TriggerableEvent.new(self)
+
+class RegistrableEvent:
+	var _eventbus: FrameworkEvent
+
+	func _init(eventbus: FrameworkEvent) -> void:
+		self._eventbus = eventbus
+
+	func register(key: String, callback: Callable):
+		return _eventbus.register(key, callback)
+
+	func unregister(key: String, callback: Callable):
+		return _eventbus.register(key, callback)
+	
+class TriggerableEvent:
+	var _eventbus: FrameworkEvent
+
+	func _init(eventbus: FrameworkEvent) -> void:
+		self._eventbus = eventbus
+
+	func trigger(key: String, value):
+		return _eventbus.trigger(key, value)

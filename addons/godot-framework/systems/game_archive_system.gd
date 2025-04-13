@@ -1,5 +1,5 @@
-## 归档
-class_name GameArchiveUtility extends FrameworkIUtility
+## 游戏存档
+class_name GameArchiveSystem extends FrameworkISystem
 
 var _path: String
 
@@ -7,14 +7,10 @@ var _secret_key: String
 
 var _models: Dictionary[String, Object]
 
-var _archive: Archive = CfgArchive.new()
+var _storage: CfgStorageUtility
 
 func on_init():
-	for k in _models:
-		var cls = _models.get(k)
-		if not Framework.is_valid_class(Framework.constant.I_MODEL, cls):
-			self.app.logger.warning("The registered class must be a model, class id is {0}.".format([k]))
-			return
+	self._storage = self.context.get_utility(CfgStorageUtility)
 
 func configuration(path: String, secret_key: String) -> void:
 	self._path = path
@@ -27,14 +23,14 @@ func save():
 	if _check() != OK:
 		return
 	var base_data := _get_base_data(_models)
-	_archive.datas = [base_data]
-	_archive.save(_path, _secret_key)
+	_storage.datas = [base_data]
+	_storage.save(_path, _secret_key)
 
 func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 	var base_data := {}
 	for model_key in models:
 		var model_class := models.get(model_key)
-		var model := self.app.get_model(model_class)
+		var model := self.context.get_model(model_class)
 		var pl := model.get_property_list()
 		var section_name := model_key
 		var section := {}
@@ -50,13 +46,13 @@ func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 func load():
 	if _check() != OK:
 		return
-	_archive.load(_path, _secret_key)
-	_set_base_data(_archive.datas[0], _models)
+	_storage.load(_path, _secret_key)
+	_set_base_data(_storage.datas[0], _models)
 
 func _set_base_data(base_data: Dictionary, models: Dictionary[String, Object]):
 	for model_key in models:
 		var model_class := models.get(model_key)
-		var model := self.app.get_model(model_class)
+		var model := self.context.get_model(model_class)
 		var pl := model.get_property_list()
 		var section_name := model_key
 		if !section_name:
@@ -79,9 +75,9 @@ func _parse_path(path: String) -> Array:
 
 func _check() -> Error:
 	if not _path:
-		self.app.logger.error("The path must be set.")
+		self.context.logger.error("The path must be set.")
 		return FAILED
 	if len(_models) == 0:
-		self.app.logger.warning("There is no model data that needs to be saved.")
+		self.context.logger.warning("There is no model data that needs to be saved.")
 		return FAILED
 	return OK
