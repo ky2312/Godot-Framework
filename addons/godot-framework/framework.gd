@@ -82,6 +82,10 @@ func run(node: Node) -> Error:
 	inited = true
 	return OK
 
+## 帧更新
+func update(delta: float) -> void:
+	pass
+
 ## 结束
 func quit():
 	self.logger.info("Quit game.")

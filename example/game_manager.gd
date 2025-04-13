@@ -31,3 +31,6 @@ func _ready() -> void:
 	# 子日志
 	var logger = app.logger.create_logger("GameManager")
 	logger.debug("在GameManager内部")
+
+func _process(delta: float) -> void:
+	app.update(delta)

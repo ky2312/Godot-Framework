@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ccvdjvrogxhvx"]
 
-[ext_resource type="Script" uid="uid://bksgajghasb7" path="res://example/scenes/two.gd" id="1_fikf5"]
-[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/scenes/hud.tscn" id="2_7oftu"]
+[ext_resource type="Script" uid="uid://cp81u1tm7kp5y" path="res://example/views/two.gd" id="1_fikf5"]
+[ext_resource type="PackedScene" uid="uid://dlkcut5teoelt" path="res://example/views/hud.tscn" id="2_7oftu"]
 
 [node name="Two" type="Node2D"]
 script = ExtResource("1_fikf5")
