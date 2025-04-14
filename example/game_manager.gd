@@ -35,5 +35,5 @@ func _ready() -> void:
 	var logger = app.logger.create_logger("GameManager")
 	logger.debug("在GameManager内部")
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	app.update(delta)

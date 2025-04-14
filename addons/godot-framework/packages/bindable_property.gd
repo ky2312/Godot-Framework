@@ -64,16 +64,11 @@ func register_with_init_value(callback: Callable) -> FrameworkUnRegisterExtensio
 func unregister(callback: Callable):
 	FrameworkUnRegisterExtension.new(_observer.event, _observer.event_name, callback).unregister()
 
-# func create_readonly_bindable_property() -> ReadonlyBindableProperty:
-# 	var rbp := ReadonlyBindableProperty.new(null)
-# 	rbp.set_bindable_property(self)
-# 	return rbp
-
 ## 观察属性的观察者
 class Observer:
 	var event:
 		get(): return _event
-	var _event := FrameworkEvent.new()
+	var _event: FrameworkEvent
 	
 	var _event_name := ""
 	var event_name:
@@ -82,31 +77,23 @@ class Observer:
 	static var _id := 0
 
 	func _init() -> void:
-		_event_name = "value_change_${}".format([Observer._id])
 		Observer._id += 1
+		self._event_name = "value_change_{0}".format([Observer._id])
+		var f = func():
+			self._event = GameManager.app.full_eventbus
+		f.call_deferred()
 
 	func register(callback: Callable):
-		_event.register(_event_name, callback)
+		var f = func():
+			_event.register(_event_name, callback)
+		f.call_deferred()
 	
 	func unregister(callback: Callable):
-		_event.unregister(_event_name, callback)
+		var f = func():
+			_event.unregister(_event_name, callback)
+		f.call_deferred()
 	
 	func trigger(value):
-		_event.trigger(_event_name, value)
-	
-# class ReadonlyBindableProperty extends FrameworkBindableProperty:
-# 	var _bp: FrameworkBindableProperty
-
-# 	func set_bindable_property(bp: FrameworkBindableProperty):
-# 		_bp = bp
-# 		_observer = bp.observer
-
-# 	func get_value():
-# 		return _bp._value
-
-# 	func set_value(value):
-# 		var message = "The read-only status cannot be modified."
-# 		if GameManager and GameManager.app:
-# 			GameManager.app.logger.warning(message)
-# 		else:
-# 			push_warning(message)
+		var f = func():
+			_event.trigger(_event_name, value)
+		f.call_deferred()

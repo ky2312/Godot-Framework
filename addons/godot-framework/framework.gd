@@ -9,8 +9,10 @@ var node: Node
 
 var _ioc: IoC
 
-var eventbus: FrameworkEvent.RegistrableEvent
-var _eventbus: FrameworkEvent
+var eventbus: FrameworkEvent.OnlyRegisterEvent
+var full_eventbus: FrameworkEvent:
+	get(): return _full_eventbus
+var _full_eventbus: FrameworkEvent
 
 var logger: FrameworkLogger
 
@@ -25,12 +27,12 @@ func _init() -> void:
 	_register_default_containers()
 
 func _init_when_init_lifecycle():
-	self._eventbus = FrameworkEvent.new()
-	self.eventbus = _eventbus.get_only_register_event()
+	self._full_eventbus = FrameworkEvent.new()
+	self.eventbus = _full_eventbus.get_only_register_event()
 	self.logger = FrameworkLogger.new()
 	var get_node_func = func() -> Node:
 		return node
-	self._ioc = IoC.new(_eventbus, logger, get_node_func)
+	self._ioc = IoC.new(_full_eventbus, logger, get_node_func)
 
 func _register_default_containers():
 	_ioc.register_utility(CfgStorageUtility)
@@ -77,15 +79,14 @@ func run(node: Node) -> Error:
 	self.node = node
 
 	_check_run()
-	_ioc.init()
+	_ioc.build()
 	
 	inited = true
 	return OK
 
 ## 帧更新
 func update(delta: float) -> void:
-	# TODO 需要更新eventbus内容
-	pass
+	_full_eventbus.update()
 
 ## 结束
 func quit():
@@ -95,5 +96,5 @@ func quit():
 func _check_run():
 	if router:
 		if not router.get_registered_size() > 0:
-			push_error("At least one route must be registered.")
+			push_warning("At least one route must be registered.")
 			return FAILED

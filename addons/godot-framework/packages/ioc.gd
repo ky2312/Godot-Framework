@@ -1,5 +1,7 @@
 class_name IoC
 
+var _ready_build_funcs: Array[Callable]
+
 var _containers: Dictionary
 
 var _eventbus: FrameworkEvent
@@ -20,7 +22,7 @@ func _init(eventbus: FrameworkEvent, logger: FrameworkLogger, get_node_func: Cal
 	self._logger = logger
 	self._get_node_func = get_node_func
 
-func init():
+func build():
 	for cls in _containers:
 		var c = _containers.get(cls)
 		match cls.class_id:
@@ -60,9 +62,9 @@ func register_model(cls: Object) -> FrameworkIModel:
 	if not is_valid_class(Framework.constant.I_MODEL, cls):
 		push_error("This class is not a model class.")
 		return
-	var event: FrameworkEvent.TriggerableEvent = _eventbus.get_only_trigger_event()
-	var ins = cls.new()
+	var event: FrameworkEvent.OnlyTriggerEvent = _eventbus.get_only_trigger_event()
 	var contexnt := FrameworkIModel.Context.new(self, event, _logger)
+	var ins = cls.new()
 	ins.set_context(contexnt)
 	_containers.set(cls, ins)
 	return ins

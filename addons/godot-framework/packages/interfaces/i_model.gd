@@ -18,13 +18,13 @@ class Context:
 
 	var eventbus:
 		get(): return _eventbus
-	var _eventbus: FrameworkEvent.TriggerableEvent
+	var _eventbus: FrameworkEvent.OnlyTriggerEvent
 
 	var logger: FrameworkLogger:
 		get(): return _logger
 	var _logger: FrameworkLogger
 
-	func _init(ioc: IoC, eventbus: FrameworkEvent.TriggerableEvent, logger: FrameworkLogger) -> void:
+	func _init(ioc: IoC, eventbus: FrameworkEvent.OnlyTriggerEvent, logger: FrameworkLogger) -> void:
 		self._ioc = ioc
 		self._eventbus = eventbus
 		self._logger = logger

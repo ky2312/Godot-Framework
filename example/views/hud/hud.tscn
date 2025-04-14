@@ -22,15 +22,15 @@ grow_horizontal = 0
 
 [node name="ReloadButton" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-text = "重新加载场景"
+text = "重新加载当前场景"
 
 [node name="SaveButton" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-text = "保存游戏数据"
+text = "保存数据"
 
 [node name="LoadDataButton" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-text = "加载游戏数据"
+text = "加载数据"
 
 [node name="ToMainButton" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
