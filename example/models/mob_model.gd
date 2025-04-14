@@ -1,9 +1,17 @@
-class_name MobModel extends FrameworkIModel
+class_name MobModelNS
 
-var count := FrameworkBindableProperty.new(0)
+class IMobModel extends FrameworkIModel:
+	func get_count() -> FrameworkBindableProperty:
+		return
 
-func _init():
-	count.value = 100
+class MobModel extends IMobModel:
+	var count := FrameworkBindableProperty.new(0)
 
-func on_init():
-	pass
+	func _init():
+		count.value = 100
+
+	func on_init():
+		pass
+	
+	func get_count():
+		return count

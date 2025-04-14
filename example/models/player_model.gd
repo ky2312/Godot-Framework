@@ -1,11 +1,25 @@
-class_name PlayerModel extends FrameworkIModel
+class_name PlayerModelNS
 
-var kill_count := FrameworkBindableProperty.new(0)
+class IPlayerModel extends FrameworkIModel:
+	func get_kill_count() -> FrameworkBindableProperty:
+		return
+	
+	func get_achievement_kill_count() -> FrameworkBindableProperty:
+		return
 
-var achievement_kill_count := FrameworkBindableProperty.new(0)
+class PlayerModel extends IPlayerModel:
+	var kill_count := FrameworkBindableProperty.new(0)
 
-func _init():
-	pass
+	var achievement_kill_count := FrameworkBindableProperty.new(0)
 
-func on_init():
-	pass
+	func _init():
+		pass
+
+	func on_init():
+		pass
+	
+	func get_kill_count():
+		return kill_count
+	
+	func get_achievement_kill_count():
+		return achievement_kill_count
