@@ -4,14 +4,10 @@ var app: Framework
 
 func _ready() -> void:
 	app = Framework.new()
-	# 修改默认存储工具和存档系统
-	app.unregister_container(StorageUtilityNS.IStorageUtility)
-	app.unregister_container(GameArchiveSystemNS.IGameArchiveSystem)
-	var json_storage_utility := app.register_container(StorageUtilityNS.IStorageUtility, StorageUtilityNS.JsonStorageUtility.new()) as StorageUtilityNS.IStorageUtility
-	app.register_container(GameArchiveSystemNS.IGameArchiveSystem, GameArchiveSystemNS.GameArchiveSystem.new(json_storage_utility))
-	
+	var storage_utility := app.get_container(StorageUtilityNS.IStorageUtility)
+	var config_utility := app.register_container(ConfigUtilityNS.IConfigUtility, ConfigUtilityNS.ConfigUtility.new(storage_utility))
 	var player_model := app.register_container(PlayerModelNS.IPlayerModel, PlayerModelNS.PlayerModel.new())
-	var mob_model := app.register_container(MobModelNS.IMobModel, MobModelNS.MobModel.new())
+	var mob_model := app.register_container(MobModelNS.IMobModel, MobModelNS.MobModel.new(config_utility))
 	app.register_container(AchievementSystemNS.IAchievementSystem, AchievementSystemNS.AchievementSystem.new(player_model))
 	app.register_container(PlayerSystemNS.IPlayerSystem, PlayerSystemNS.PlayerSystem.new(player_model, mob_model))
 
@@ -22,8 +18,8 @@ func _ready() -> void:
 		return
 	app.logger.info("启动游戏成功")
 
-	# app.game_archive.configuration("res://.debug/data/save.cfg", "secret_key")
-	app.game_archive.configuration("res://.debug/data/save.cfg", "")
+	# app.game_archive.configuration("res://.debug/data/save.json", "secret_key")
+	app.game_archive.configuration("res://.debug/data/save.json", "")
 	app.game_archive.register_model("player", player_model)
 	app.game_archive.register_model("mob", mob_model)
 	

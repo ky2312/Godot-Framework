@@ -7,11 +7,13 @@ class IMobModel extends FrameworkIModel:
 class MobModel extends IMobModel:
 	var count := FrameworkBindableProperty.new(0)
 
-	func _init():
-		count.value = 100
+	var _config_utility: ConfigUtilityNS.IConfigUtility
+
+	func _init(config_utility: ConfigUtilityNS.IConfigUtility):
+		_config_utility = config_utility
 
 	func on_init():
-		pass
-	
+		count.value = _config_utility.get_mob_count()
+
 	func get_count():
 		return count

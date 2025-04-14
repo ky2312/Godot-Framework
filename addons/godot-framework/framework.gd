@@ -40,7 +40,7 @@ func _init_when_ready_lifecycle():
 	self.game_archive = _ioc.get_container(GameArchiveSystemNS.IGameArchiveSystem)
 
 func _register_default_containers():
-	var storage_utility = _ioc.register_container(StorageUtilityNS.IStorageUtility, StorageUtilityNS.CfgStorageUtility.new())
+	var storage_utility = _ioc.register_container(StorageUtilityNS.IStorageUtility, StorageUtilityNS.StorageUtility.new())
 	_ioc.register_container(AudioUtilityNS.IAudioUtility, AudioUtilityNS.AudioUtility.new())
 	_ioc.register_container(RouterUtilityNS.IRouterUtility, RouterUtilityNS.RouterUtility.new())
 	_ioc.register_container(GameArchiveSystemNS.IGameArchiveSystem, GameArchiveSystemNS.GameArchiveSystem.new(storage_utility))

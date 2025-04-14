@@ -41,8 +41,7 @@ class GameArchiveSystem extends IGameArchiveSystem:
 		if _check() != OK:
 			return
 		var base_data := _get_base_data(_models)
-		_storage.set_datas([base_data])
-		_storage.save(_path, _secret_key)
+		_storage.save_cfg(_path, _secret_key, base_data)
 
 	func _get_base_data(models: Dictionary[String, Object]) -> Dictionary:
 		var base_data := {}
@@ -63,8 +62,9 @@ class GameArchiveSystem extends IGameArchiveSystem:
 	func load():
 		if _check() != OK:
 			return
-		_storage.load(_path, _secret_key)
-		_set_base_data(_storage.get_datas()[0], _models)
+		var _data := {}
+		_storage.load_cfg(_path, _secret_key, _data)
+		_set_base_data(_data, _models)
 
 	func _set_base_data(base_data: Dictionary, models: Dictionary[String, Object]):
 		for model_key in models:
