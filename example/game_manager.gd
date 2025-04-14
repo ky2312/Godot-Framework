@@ -8,6 +8,7 @@ func _ready() -> void:
 	var config_utility := app.register_container(ConfigUtilityNS.IConfigUtility, ConfigUtilityNS.ConfigUtility.new(storage_utility))
 	var player_model := app.register_container(PlayerModelNS.IPlayerModel, PlayerModelNS.PlayerModel.new())
 	var mob_model := app.register_container(MobModelNS.IMobModel, MobModelNS.MobModel.new(config_utility))
+	app.register_container(TextModelNS.ITextModel, TextModelNS.TextModel)
 	app.register_container(AchievementSystemNS.IAchievementSystem, AchievementSystemNS.AchievementSystem.new(player_model))
 	app.register_container(PlayerSystemNS.IPlayerSystem, PlayerSystemNS.PlayerSystem.new(player_model, mob_model))
 

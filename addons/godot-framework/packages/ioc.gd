@@ -24,7 +24,8 @@ func _init(eventbus: FrameworkEvent, logger: FrameworkLogger, get_node_func: Cal
 
 func build():
 	for inter in _containers:
-		_containers[inter].on_init()
+		if _containers[inter].has_method("on_init"):
+			_containers[inter].on_init()
 
 func register_container(inter: Object, ins: Object) -> Object:
 	if _containers.has(inter):
@@ -54,6 +55,7 @@ func _register_system(inter: Object, ins: Object) -> FrameworkISystem:
 		push_error("This interface is not a system interface.")
 		return
 	var context := FrameworkISystem.Context.new(self, _eventbus, _logger)
+	ins = _get_instance(ins)
 	ins.set_context(context)
 	_containers.set(inter, ins)
 	return ins
@@ -64,6 +66,7 @@ func _register_model(inter: Object, ins: Object) -> FrameworkIModel:
 		return
 	var event: FrameworkEvent.OnlyTriggerEvent = _eventbus.get_only_trigger_event()
 	var contexnt := FrameworkIModel.Context.new(self, event, _logger)
+	ins = _get_instance(ins)
 	ins.set_context(contexnt)
 	_containers.set(inter, ins)
 	return ins
@@ -76,6 +79,12 @@ func _register_utility(inter: Object, ins: Object) -> FrameworkIUtility:
 		var node = _get_node_func.call() as Node
 		return node
 	var context := FrameworkIUtility.Context.new(self, _logger, get_framework_node)
+	ins = _get_instance(ins)
 	ins.set_context(context)
 	_containers.set(inter, ins)
+	return ins
+
+func _get_instance(ins: Object) -> Object:
+	if "new" in ins:
+		return ins.new()
 	return ins

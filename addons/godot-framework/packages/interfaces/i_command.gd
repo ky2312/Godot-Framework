@@ -5,7 +5,6 @@ static var class_id = Framework.constant.I_COMMAND
 
 var context: Context
 
-
 ## 通过创建传递参数
 func _init() -> void:
 	pass
@@ -29,5 +28,14 @@ class Context:
 		self._ioc = ioc
 		self._logger = logger
 
-	func get_system(cls: Object) -> FrameworkISystem:
-		return self._ioc.get_container(cls)
+	func get_container(inter: Object) -> Object:
+		var valid_tag = [Framework.constant.I_SYSTEM, Framework.constant.I_MODEL]
+		var result = false
+		for t in valid_tag:
+			if _ioc.is_valid_class(t, inter):
+				result = true
+				break
+		if not result:
+			_logger.error("This interface is not a valid interface.")
+			return
+		return self._ioc.get_container(inter)
