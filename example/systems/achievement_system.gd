@@ -4,13 +4,13 @@ class IAchievementSystem extends FrameworkISystem:
 	pass
 
 class AchievementSystem extends IAchievementSystem:
-	var _player_model: PlayerModelNS.IPlayerModel
+	var _player_model: PlayerModelNS.PlayerModel
 
-	func _init(player_model: PlayerModelNS.IPlayerModel):
+	func _init(player_model: PlayerModelNS.PlayerModel):
 		self._player_model = player_model
 
 	func on_init():
-		_player_model.get_kill_count().register(
+		_player_model.kill_count.register(
 			func(kill_count):
 				var s = ""
 				match kill_count:
@@ -25,6 +25,6 @@ class AchievementSystem extends IAchievementSystem:
 					self.context.eventbus.trigger("achievement_killed_count", s)
 					self.context.logger.debug(s)
 
-					_player_model.get_achievement_kill_count().value = kill_count
+					_player_model.achievement_kill_count.value = kill_count
 					self.context.logger.debug("已保存成就击杀数 {0}".format([kill_count]))
 		)

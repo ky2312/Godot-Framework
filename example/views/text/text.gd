@@ -4,8 +4,8 @@ extends Node2D
 @onready var echo_text: Label = %EchoText
 
 func _ready() -> void:
-	var text_model := GameManager.app.get_container(TextModelNS.ITextModel) as TextModelNS.ITextModel
-	text_model.get_input1().register(func(input1):
+	var text_model := GameManager.app.get_container(TextModelNS.TextModel) as TextModelNS.TextModel
+	text_model.input1.register(func(input1):
 		echo_text.text = input1
 	).unregister_when_node_exit_tree(self)
 

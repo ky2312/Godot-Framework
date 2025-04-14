@@ -7,9 +7,9 @@ extends Node2D
 func _ready() -> void:
 	GameManager.app.logger.debug("进入two场景")
 
-	var player_model := GameManager.app.get_container(PlayerModelNS.IPlayerModel) as PlayerModelNS.IPlayerModel
-	player_model.get_kill_count().register_with_init_value(func(kill_count):
-		kill_label.text = "在上一个场景中，已击杀 {0} 个小怪，上次存档点已击杀 {1} 次。".format([kill_count, player_model.get_achievement_kill_count().value])
+	var player_model := GameManager.app.get_container(PlayerModelNS.PlayerModel) as PlayerModelNS.PlayerModel
+	player_model.kill_count.register_with_init_value(func(kill_count):
+		kill_label.text = "在上一个场景中，已击杀 {0} 个小怪，上次存档点已击杀 {1} 次。".format([kill_count, player_model.achievement_kill_count.value])
 	).unregister_when_node_exit_tree(self)
 	router.text = "存在 {0} 个路由记录\n当前路由: {1}".format([len(GameManager.app.router.get_history()), GameManager.app.router.get_current_route()])
 
