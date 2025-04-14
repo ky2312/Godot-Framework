@@ -5,8 +5,12 @@ static var class_id = Framework.constant.I_UTILITY
 
 var context: Context
 
-## 初始化时执行
-## 子类应该实现
+## 通过创建传递依赖
+## 允许范围 IUtility
+func _init() -> void:
+	pass
+
+## 框架允许时执行
 func on_init() -> void:
 	pass
 

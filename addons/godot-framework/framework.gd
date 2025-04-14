@@ -16,11 +16,11 @@ var _full_eventbus: FrameworkEvent
 
 var logger: FrameworkLogger
 
-var router: RouterUtility
+var router: RouterUtilityNS.IRouterUtility
 
-var audio: AudioUtility
+var audio: AudioUtilityNS.IAudioUtility
 
-var game_archive: GameArchiveSystem
+var game_archive: GameArchiveSystemNS.IGameArchiveSystem
 	
 func _init() -> void:
 	_init_when_init_lifecycle()
@@ -34,35 +34,25 @@ func _init_when_init_lifecycle():
 		return node
 	self._ioc = IoC.new(_full_eventbus, logger, get_node_func)
 
+func _init_when_ready_lifecycle():
+	self.audio = _ioc.get_container(AudioUtilityNS.IAudioUtility)
+	self.router = _ioc.get_container(RouterUtilityNS.IRouterUtility)
+	self.game_archive = _ioc.get_container(GameArchiveSystemNS.IGameArchiveSystem)
+
 func _register_default_containers():
-	_ioc.register_utility(CfgStorageUtility)
-	_ioc.register_utility(CsvStorageUtility)
-	_ioc.register_utility(JsonStorageUtility)
+	var storage_utility = _ioc.register_container(StorageUtilityNS.IStorageUtility, StorageUtilityNS.CfgStorageUtility.new())
+	_ioc.register_container(AudioUtilityNS.IAudioUtility, AudioUtilityNS.AudioUtility.new())
+	_ioc.register_container(RouterUtilityNS.IRouterUtility, RouterUtilityNS.RouterUtility.new())
+	_ioc.register_container(GameArchiveSystemNS.IGameArchiveSystem, GameArchiveSystemNS.GameArchiveSystem.new(storage_utility))
 
-	_ioc.register_utility(AudioUtility)
-	self.audio = _ioc.get_utility(AudioUtility)
+func register_container(inter: Object, ins: Object) -> Object:
+	return _ioc.register_container(inter, ins)
 
-	_ioc.register_utility(RouterUtility)
-	self.router = _ioc.get_utility(RouterUtility)
+func get_container(inter: Object) -> Object:
+	return _ioc.get_container(inter)
 
-	_ioc.register_system(GameArchiveSystem)
-	self.game_archive = _ioc.get_system(GameArchiveSystem)
-	
-## 注册系统层实例
-func register_system(cls: Object) -> FrameworkISystem:
-	return _ioc.register_system(cls)
-
-## 注册模型层实例
-func register_model(cls: Object) -> FrameworkIModel:
-	return _ioc.register_model(cls)
-
-## 获取模型层实例
-func get_model(cls: Object) -> FrameworkIModel:
-	return _ioc.get_model(cls)
-
-## 注册工具层实例
-func register_utility(cls: Object) -> FrameworkIUtility:
-	return _ioc.register_utility(cls)
+func unregister_container(inter: Object):
+	return _ioc.unregister_container(inter)
 
 ## 发送命令
 func send_command(command: FrameworkICommand):
@@ -71,15 +61,13 @@ func send_command(command: FrameworkICommand):
 	command.on_execute()
 
 ## 开始运行框架
-## 会检测配置是否正确
 func run(node: Node) -> Error:
 	if inited:
 		return OK
 	
 	self.node = node
-
-	_check_run()
-	_ioc.build()
+	self._init_when_ready_lifecycle()
+	self._ioc.build()
 	
 	inited = true
 	return OK
@@ -92,9 +80,3 @@ func update(delta: float) -> void:
 func quit():
 	self.logger.info("Quit game.")
 	self.node.get_tree().quit()
-
-func _check_run():
-	if router:
-		if not router.get_registered_size() > 0:
-			push_warning("At least one route must be registered.")
-			return FAILED

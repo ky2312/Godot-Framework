@@ -1,78 +1,114 @@
 ## 路由器
-class_name RouterUtility extends FrameworkIUtility
+class_name RouterUtilityNS
 
-var history: Array[Route]
+class IRouterUtility extends FrameworkIUtility:
+	func get_history() -> Array[Route]:
+		return []
 
-var current_route:
-	get():
+	func get_current_route():
+		pass
+
+	func register(name: String, path: String):
+		pass
+
+	func go(step: int) -> Error:
+		return FAILED
+
+	func push(name: String, is_record: bool = true, router_jump: RouterJump = QuickRouterJump.new()) -> Error:
+		return FAILED
+
+	func back() -> Error:
+		return FAILED
+
+	func clear() -> void:
+		pass
+
+	func change_scene(path_or_packed) -> Error:
+		return FAILED
+
+class RouterUtility extends IRouterUtility:
+	var _history: Array[Route]
+
+	var _current_route_index: int = -1
+
+	var _need_loading_route: Route
+
+	var _m: Dictionary[String, Route]
+
+	func on_init():
+		pass
+
+	func get_history() -> Array[Route]:
+		return _history
+		
+	func get_current_route():
 		if _current_route_index < 0:
 			return null
-		return history[_current_route_index]
-var _current_route_index: int = -1
+		return _history[_current_route_index]
 
-var need_loading_route: Route
 
-var _m: Dictionary[String, Route]
+	# func get_need_loading_route():
+	# 	return _need_loading_route
 
-func on_init():
-	pass
+	# func set_need_loading_route(route: Route):
+	# 	_need_loading_route = route
 
-func register(name: String, path: String):
-	if _m.has(name):
-		self.context.logger.warning("There are conflicting route names.")
-		return
-	var route = _m.get_or_add(name, Route.new()) as Route
-	route.name = name
-	route.path = path
-	_m.set(name, route)
+	func register(name: String, path: String):
+		if _m.has(name):
+			self.context.logger.warning("There are conflicting route names.")
+			return
+		var route = _m.get_or_add(name, Route.new()) as Route
+		route.name = name
+		route.path = path
+		_m.set(name, route)
 
-func get_registered_size() -> int:
-	return len(_m)
+	# func get_registered_size() -> int:
+	# 	return len(_m)
 
-func go(step: int) -> Error:
-	if step == 0:
-		self.context.get_framework_node().get_tree().reload_current_scene()
+	func go(step: int) -> Error:
+		if step == 0:
+			self.context.get_framework_node().get_tree().reload_current_scene()
+			return OK
+		if _current_route_index + step >= len(_history):
+			self.context.logger.warning("There is no valid route.")
+			return FAILED
+		_current_route_index += step
+		return change_scene(get_current_route().path)
+
+	func push(name: String, is_record: bool = true, router_jump: RouterJump = QuickRouterJump.new()) -> Error:
+		if not _m.has(name):
+			self.context.logger.error("The route name that does not exist.")
+			return FAILED
+		var route = _m.get(name)
+		if is_record:
+			_current_route_index += 1
+			_history.resize(_current_route_index + 1)
+			_history[_current_route_index] = route
+		router_jump.router = self
+		router_jump.jump(route)
 		return OK
-	if _current_route_index + step >= len(history):
-		self.context.logger.warning("There is no valid route.")
-		return FAILED
-	_current_route_index += step
-	return change_scene(current_route.path)
 
-func push(name: String, is_record: bool = true, router_jump: RouterJump = QuickRouterJump.new()) -> Error:
-	if not _m.has(name):
-		self.context.logger.error("The route name that does not exist.")
-		return FAILED
-	var route = _m.get(name)
-	if is_record:
-		_current_route_index += 1
-		history.resize(_current_route_index + 1)
-		history[_current_route_index] = route
-	router_jump.router = self
-	router_jump.jump(route)
-	return OK
+	func back() -> Error:
+		if _current_route_index <= 0:
+			self.context.logger.warning("There is no valid route.")
+			return FAILED
+		_current_route_index -= 1
+		return change_scene(get_current_route().path)
 
-func back() -> Error:
-	if _current_route_index <= 0:
-		self.context.logger.warning("There is no valid route.")
-		return FAILED
-	_current_route_index -= 1
-	return change_scene(current_route.path)
+	func clear() -> void:
+		_current_route_index = -1
+		_history.clear()
 
-func clear() -> void:
-	_current_route_index = -1
-	history.clear()
-
-func change_scene(path_or_packed) -> Error:
-	var err: Error
-	if typeof(path_or_packed) == TYPE_STRING:
-		err = self.context.get_framework_node().get_tree().change_scene_to_file(path_or_packed)
-	else:
-		err = self.context.get_framework_node().get_tree().change_scene_to_packed(path_or_packed)
-	if err != OK:
-		self.context.logger.error("Unable to navigate to the route, error code {0}.".format([err]))
-		return err
-	return OK
+	func change_scene(path_or_packed) -> Error:
+		var err: Error
+		if typeof(path_or_packed) == TYPE_STRING:
+			err = self.context.get_framework_node().get_tree().change_scene_to_file(path_or_packed)
+		else:
+			err = self.context.get_framework_node().get_tree().change_scene_to_packed(path_or_packed)
+		if err != OK:
+			self.context.logger.error("Unable to navigate to the route, error code {0}.".format([err]))
+			return err
+		return OK
 
 class Route:
 	var name := ""
@@ -92,16 +128,16 @@ class RouterJump:
 ## 快速模式路由器跳转
 class QuickRouterJump extends RouterJump:
 	func jump(route: Route):
-		router.need_loading_route = route
+		router._need_loading_route = route
 		router.change_scene(route.path)
-		router.need_loading_route = null
+		router._need_loading_route = null
 
 ## 加载模式路由器跳转
 class LoadRouterJump extends RouterJump:
 	var loading_path = "res://addons/godot-framework/views/route_loading/route_loading.tscn"
 	
 	func jump(route: Route):
-		router.need_loading_route = route
+		router._need_loading_route = route
 		router.change_scene(loading_path)
 
 ## 加载模式路由器控制逻辑
@@ -120,7 +156,7 @@ class LoadRouterControl:
 		self._finished_callback = finished_callback
 	
 	func load():
-		_res_loader.load(_router.need_loading_route.path, _update, _finish)
+		_res_loader.load(_router._need_loading_route.path, _update, _finish)
 
 	func update():
 		_res_loader.update()
@@ -135,4 +171,4 @@ class LoadRouterControl:
 		if _finished_callback:
 			await _finished_callback.call()
 		_router.change_scene(r)
-		_router.need_loading_route = null
+		_router._need_loading_route = null

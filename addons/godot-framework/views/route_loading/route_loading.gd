@@ -2,7 +2,7 @@ extends CanvasLayer
 
 @onready var progress_bar: ProgressBar = %ProgressBar
 
-var _load_router_control: RouterUtility.LoadRouterControl
+var _load_router_control: RouterUtilityNS.LoadRouterControl
 
 func _ready() -> void:
 	var update_callback = func(p):
@@ -11,7 +11,7 @@ func _ready() -> void:
 		set_physics_process(false)
 		await get_tree().create_timer(0.3).timeout
 
-	_load_router_control = RouterUtility.LoadRouterControl.new(GameManager.app.router, update_callback, finished_callback)
+	_load_router_control = RouterUtilityNS.LoadRouterControl.new(GameManager.app.router, update_callback, finished_callback)
 	await get_tree().create_timer(0.3).timeout
 	_load_router_control.load()
 

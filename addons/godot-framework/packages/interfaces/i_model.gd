@@ -5,8 +5,7 @@ static var class_id = Framework.constant.I_MODEL
 
 var context: Context
 
-## 初始化时执行
-## 子类应该实现
+## 框架允许时执行
 func on_init() -> void:
 	pass
 

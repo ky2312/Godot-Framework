@@ -1,8 +1,8 @@
 class_name IoC
 
-var _ready_build_funcs: Array[Callable]
-
-var _containers: Dictionary
+## 依赖
+## Dictionary[interface: Object, instance: Object]
+var _containers: Dictionary[Object, Object]
 
 var _eventbus: FrameworkEvent
 
@@ -23,79 +23,59 @@ func _init(eventbus: FrameworkEvent, logger: FrameworkLogger, get_node_func: Cal
 	self._get_node_func = get_node_func
 
 func build():
-	for cls in _containers:
-		var c = _containers.get(cls)
-		match cls.class_id:
-			Framework.constant.I_MODEL:
-				c.on_init()
-			Framework.constant.I_SYSTEM:
-				c.on_init()
-			Framework.constant.I_UTILITY:
-				c.on_init()
+	for inter in _containers:
+		_containers[inter].on_init()
 
-## 注册系统层实例
-func register_system(cls: Object) -> FrameworkISystem:
-	if _containers.has(cls):
-		push_error("Cannot register a system class with the same name.")
+func register_container(inter: Object, ins: Object) -> Object:
+	if _containers.has(inter):
+		push_error("Cannot register a interface with the same name.")
 		return
-	if not is_valid_class(Framework.constant.I_SYSTEM, cls):
-		push_error("This class is not a system class.")
+	match inter.class_id:
+		Framework.constant.I_MODEL:
+			return _register_model(inter, ins)
+		Framework.constant.I_SYSTEM:
+			return _register_system(inter, ins)
+		Framework.constant.I_UTILITY:
+			return _register_utility(inter, ins)
+		_:
+			return
+
+func get_container(inter: Object) -> Object:
+	if not _containers.has(inter):
+		push_error("Cannot get a interface with the name.")
 		return
-	var ins = cls.new()
+	return _containers.get(inter)
+
+func unregister_container(inter: Object):
+	_containers.erase(inter)
+
+func _register_system(inter: Object, ins: Object) -> FrameworkISystem:
+	if not is_valid_class(Framework.constant.I_SYSTEM, inter):
+		push_error("This interface is not a system interface.")
+		return
 	var context := FrameworkISystem.Context.new(self, _eventbus, _logger)
 	ins.set_context(context)
-	_containers.set(cls, ins)
+	_containers.set(inter, ins)
 	return ins
 
-## 获取系统层实例
-func get_system(cls: Object) -> FrameworkISystem:
-	if not _containers.has(cls):
-		push_error("Cannot get a system class with the name.")
-		return
-	return _containers.get(cls)
-
-## 注册模型层实例
-func register_model(cls: Object) -> FrameworkIModel:
-	if _containers.has(cls):
-		push_error("Cannot register a model class with the same name.")
-		return
-	if not is_valid_class(Framework.constant.I_MODEL, cls):
-		push_error("This class is not a model class.")
+func _register_model(inter: Object, ins: Object) -> FrameworkIModel:
+	if not is_valid_class(Framework.constant.I_MODEL, inter):
+		push_error("This interface is not a model interface.")
 		return
 	var event: FrameworkEvent.OnlyTriggerEvent = _eventbus.get_only_trigger_event()
 	var contexnt := FrameworkIModel.Context.new(self, event, _logger)
-	var ins = cls.new()
 	ins.set_context(contexnt)
-	_containers.set(cls, ins)
+	_containers.set(inter, ins)
 	return ins
 
-## 获取模型层实例
-func get_model(cls: Object) -> FrameworkIModel:
-	if not _containers.has(cls):
-		push_error("Cannot get a model class with the name.")
+func _register_utility(inter: Object, ins: Object) -> FrameworkIUtility:
+	if not is_valid_class(Framework.constant.I_UTILITY, inter):
+		push_error("This interface is not a utility interface.")
 		return
-	return _containers.get(cls)
-
-## 注册工具层实例
-func register_utility(cls: Object) -> FrameworkIUtility:
-	if _containers.has(cls):
-		push_error("Cannot register a utility class with the same name.")
-		return
-	if not is_valid_class(Framework.constant.I_UTILITY, cls):
-		push_error("This class is not a utility class.")
-		return
-	var ins = cls.new()
 	var get_framework_node = func() -> Node:
 		var node = _get_node_func.call() as Node
 		return node
 	var context := FrameworkIUtility.Context.new(self, _logger, get_framework_node)
 	ins.set_context(context)
-	_containers.set(cls, ins)
+	_containers.set(inter, ins)
 	return ins
-
-## 获取工具层实例
-func get_utility(cls: Object) -> FrameworkIUtility:
-	if not _containers.has(cls):
-		push_error("Cannot get a utility class with the name.")
-		return
-	return _containers.get(cls)

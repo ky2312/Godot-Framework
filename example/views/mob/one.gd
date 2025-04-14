@@ -10,8 +10,8 @@ extends Node2D
 func _ready() -> void:
 	GameManager.app.logger.debug("进入one场景")
 	# 读取数据并监听数据更新
-	var model_player = GameManager.app.get_model(PlayerModel) as PlayerModel
-	var model_mob = GameManager.app.get_model(MobModel) as MobModel
+	var model_player = GameManager.app.get_container(PlayerModel) as PlayerModel
+	var model_mob = GameManager.app.get_container(MobModel) as MobModel
 	# 两种使用方式
 	# 便捷使用多个值
 	FrameworkBindableProperty.register_propertys_with_init_value(
@@ -39,7 +39,7 @@ func _ready() -> void:
 	GameManager.app.eventbus.register("achievement_killed_count", func(value):
 		achievement_label.text = value
 	).unregister_when_node_exit_tree(self)
-	router.text = "存在 {0} 个路由记录\n当前路由: {1}".format([len(GameManager.app.router.history), GameManager.app.router.current_route])
+	router.text = "存在 {0} 个路由记录\n当前路由: {1}".format([len(GameManager.app.router.get_history()), GameManager.app.router.get_current_route()])
 
 func _exit_tree() -> void:
 	GameManager.app.logger.debug("离开one场景")
@@ -52,4 +52,4 @@ func _on_kill_button_pressed() -> void:
 
 func _on_jump_button_pressed() -> void:
 	#GameManager.app.router.push("mob/two")
-	GameManager.app.router.push("mob/two", true, RouterUtility.LoadRouterJump.new())
+	GameManager.app.router.push("mob/two", true, RouterUtilityNS.LoadRouterJump.new())

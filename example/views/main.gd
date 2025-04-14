@@ -7,7 +7,7 @@ func _ready() -> void:
 
 func _on_mob_game_button_pressed() -> void:
 	#GameManager.app.router.push("mob/one")
-	GameManager.app.router.push("mob/one", true, RouterUtility.LoadRouterJump.new())
+	GameManager.app.router.push("mob/one", true, RouterUtilityNS.LoadRouterJump.new())
 
 func _on_platform_jump_button_pressed() -> void:
 	GameManager.app.router.push("platform_jump/level_1")

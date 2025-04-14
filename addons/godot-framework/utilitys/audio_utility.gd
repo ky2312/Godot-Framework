@@ -1,107 +1,131 @@
 ## 音频管理器
-class_name AudioUtility extends FrameworkIUtility
+class_name AudioUtilityNS
 
-enum BUS {
-	MASTER_BUS,
-	MUSIC_BUS,
-	SFX_BUS,
-}
+class IAudioUtility extends FrameworkIUtility:
+	## 播放音乐
+	func play_music(stream: AudioStream, fade_in_duration: float = 0.5, fade_out_duration: float = 0.5):
+		pass
+	
+	## 播放音效
+	func play_sfx(stream: AudioStream, pitch: float = 1.0):
+		pass
 
-var _music_audio_player_count := 2
-var _sfx_audio_player_count := 5
-var _max_sfx_audio_player_count := 10
-var _bmusic_audio_players: Array[AudioStreamPlayer]
-var _current_bmusic_audio_index := 0
-var _empty_bmusic_audio_index := 1
-var _sfx_audio_players: Array[AudioStreamPlayer]
+	## 设置总音量
+	## 单位百分制
+	func set_volume(volume: float):
+		pass
 
-func on_init():
-	AudioServer.add_bus(BUS.MUSIC_BUS)
-	AudioServer.set_bus_name(BUS.MUSIC_BUS, "Music")
-	AudioServer.add_bus(BUS.SFX_BUS)
-	AudioServer.set_bus_name(BUS.SFX_BUS, "Sfx")
-	_init_music_audio()
-	_init_sfx_audio()
+	## 设置音乐音量
+	## 单位百分制
+	func set_music_volume(volume: float):
+		pass
 
-func _init_music_audio():
-	for i in _music_audio_player_count:
-		var audio_player = AudioStreamPlayer.new()
-		audio_player.process_mode = Node.PROCESS_MODE_ALWAYS
-		audio_player.bus = AudioServer.get_bus_name(BUS.MUSIC_BUS)
-		self.context.get_framework_node().add_child(audio_player)
-		_bmusic_audio_players.push_back(audio_player)
+	## 设置音效音量
+	## 单位百分制
+	func set_sfx_volume(volume: float):
+		pass
 
-func _init_sfx_audio():
-	for i in _sfx_audio_player_count:
-		var audio_player = AudioStreamPlayer.new()
-		audio_player.bus = AudioServer.get_bus_name(BUS.SFX_BUS)
-		self.context.get_framework_node().add_child(audio_player)
-		_sfx_audio_players.push_back(audio_player)
+class AudioUtility extends IAudioUtility:
+	enum BUS {
+		MASTER_BUS,
+		MUSIC_BUS,
+		SFX_BUS,
+	}
 
-## 播放音乐
-func play_music(stream: AudioStream, fade_in_duration: float = 0.5, fade_out_duration: float = 0.5):
-	if not stream:
-		self.context.logger.error("The smusic cannot be empty.")
-		return
-	var _audio_players = _bmusic_audio_players
-	if _audio_players[_current_bmusic_audio_index].stream == stream:
-		return
-	if _audio_players[_current_bmusic_audio_index].playing:
-		_fade_out_and_stop(_audio_players[_current_bmusic_audio_index], fade_out_duration)
-		var _e = _current_bmusic_audio_index
-		_current_bmusic_audio_index = _empty_bmusic_audio_index
-		_empty_bmusic_audio_index = _e
-	_audio_players[_current_bmusic_audio_index].stream = stream
-	_play_and_fade_in(_audio_players[_current_bmusic_audio_index], fade_in_duration)
+	var _music_audio_player_count := 2
+	var _sfx_audio_player_count := 5
+	var _max_sfx_audio_player_count := 10
+	var _bmusic_audio_players: Array[AudioStreamPlayer]
+	var _current_bmusic_audio_index := 0
+	var _empty_bmusic_audio_index := 1
+	var _sfx_audio_players: Array[AudioStreamPlayer]
 
-## 播放音效
-func play_sfx(stream: AudioStream, pitch: float = 1.0):
-	if not stream:
-		self.context.logger.error("The sfx cannot be empty.")
-		return
-	for player in _sfx_audio_players:
-		if not player.playing:
-			player.stream = stream
-			player.pitch_scale = pitch
-			player.play()
+	func on_init():
+		AudioServer.add_bus(BUS.MUSIC_BUS)
+		AudioServer.set_bus_name(BUS.MUSIC_BUS, "Music")
+		AudioServer.add_bus(BUS.SFX_BUS)
+		AudioServer.set_bus_name(BUS.SFX_BUS, "Sfx")
+		_init_music_audio()
+		_init_sfx_audio()
+
+	func _init_music_audio():
+		for i in _music_audio_player_count:
+			var audio_player = AudioStreamPlayer.new()
+			audio_player.process_mode = Node.PROCESS_MODE_ALWAYS
+			audio_player.bus = AudioServer.get_bus_name(BUS.MUSIC_BUS)
+			self.context.get_framework_node().add_child(audio_player)
+			_bmusic_audio_players.push_back(audio_player)
+
+	func _init_sfx_audio():
+		for i in _sfx_audio_player_count:
+			var audio_player = AudioStreamPlayer.new()
+			audio_player.bus = AudioServer.get_bus_name(BUS.SFX_BUS)
+			self.context.get_framework_node().add_child(audio_player)
+			_sfx_audio_players.push_back(audio_player)
+
+	func play_music(stream: AudioStream, fade_in_duration: float = 0.5, fade_out_duration: float = 0.5):
+		if not stream:
+			self.context.logger.error("The smusic cannot be empty.")
 			return
-	# 没有空闲
-	if _sfx_audio_player_count < _max_sfx_audio_player_count:
-		_sfx_audio_player_count += 1
-		var audio_player = AudioStreamPlayer.new()
-		audio_player.bus = AudioServer.get_bus_name(BUS.SFX_BUS)
-		self.context.get_framework_node().add_child(audio_player)
-		_sfx_audio_players.push_back(audio_player)
+		var _audio_players = _bmusic_audio_players
+		if _audio_players[_current_bmusic_audio_index].stream == stream:
+			return
+		if _audio_players[_current_bmusic_audio_index].playing:
+			_fade_out_and_stop(_audio_players[_current_bmusic_audio_index], fade_out_duration)
+			var _e = _current_bmusic_audio_index
+			_current_bmusic_audio_index = _empty_bmusic_audio_index
+			_empty_bmusic_audio_index = _e
+		_audio_players[_current_bmusic_audio_index].stream = stream
+		_play_and_fade_in(_audio_players[_current_bmusic_audio_index], fade_in_duration)
 
-## 设置总音量
-## 单位百分制
-func set_volume(volume: float):
-	var v = volume / 100.0
-	AudioServer.set_bus_volume_linear(BUS.MASTER_BUS, v)
+	## 播放音效
+	func play_sfx(stream: AudioStream, pitch: float = 1.0):
+		if not stream:
+			self.context.logger.error("The sfx cannot be empty.")
+			return
+		for player in _sfx_audio_players:
+			if not player.playing:
+				player.stream = stream
+				player.pitch_scale = pitch
+				player.play()
+				return
+		# 没有空闲
+		if _sfx_audio_player_count < _max_sfx_audio_player_count:
+			_sfx_audio_player_count += 1
+			var audio_player = AudioStreamPlayer.new()
+			audio_player.bus = AudioServer.get_bus_name(BUS.SFX_BUS)
+			self.context.get_framework_node().add_child(audio_player)
+			_sfx_audio_players.push_back(audio_player)
 
-## 设置音乐音量
-## 单位百分制
-func set_music_volume(volume: float):
-	var v = volume / 100.0
-	AudioServer.set_bus_volume_linear(BUS.MUSIC_BUS, v)
+	## 设置总音量
+	## 单位百分制
+	func set_volume(volume: float):
+		var v = volume / 100.0
+		AudioServer.set_bus_volume_linear(BUS.MASTER_BUS, v)
 
-## 设置音效音量
-## 单位百分制
-func set_sfx_volume(volume: float):
-	var v = volume / 100.0
-	AudioServer.set_bus_volume_linear(BUS.SFX_BUS, v)
+	## 设置音乐音量
+	## 单位百分制
+	func set_music_volume(volume: float):
+		var v = volume / 100.0
+		AudioServer.set_bus_volume_linear(BUS.MUSIC_BUS, v)
 
-## 渐入
-func _play_and_fade_in(audio_player: AudioStreamPlayer, fade_duration: float):
-	audio_player.play()
-	var tween = self.context.get_framework_node().create_tween()
-	tween.tween_property(audio_player, "volume_db", 0, fade_duration)
-	await tween.finished
+	## 设置音效音量
+	## 单位百分制
+	func set_sfx_volume(volume: float):
+		var v = volume / 100.0
+		AudioServer.set_bus_volume_linear(BUS.SFX_BUS, v)
 
-## 渐出
-func _fade_out_and_stop(audio_player: AudioStreamPlayer, fade_duration: float):
-	var tween = self.context.get_framework_node().create_tween()
-	tween.tween_property(audio_player, "volume_db", -40.0, fade_duration)
-	await tween.finished
-	audio_player.stop()
-	audio_player.stream = null
+	## 渐入
+	func _play_and_fade_in(audio_player: AudioStreamPlayer, fade_duration: float):
+		audio_player.play()
+		var tween = self.context.get_framework_node().create_tween()
+		tween.tween_property(audio_player, "volume_db", 0, fade_duration)
+		await tween.finished
+
+	## 渐出
+	func _fade_out_and_stop(audio_player: AudioStreamPlayer, fade_duration: float):
+		var tween = self.context.get_framework_node().create_tween()
+		tween.tween_property(audio_player, "volume_db", -40.0, fade_duration)
+		await tween.finished
+		audio_player.stop()
+		audio_player.stream = null
